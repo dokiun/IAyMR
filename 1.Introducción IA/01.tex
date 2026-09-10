@@ -1,0 +1,99 @@
+\documentclass[14pt,twoside]{article}
+
+% Paquetes a utilizar
+\usepackage[utf8]{inputenc}
+\usepackage[spanish]{babel}
+\usepackage{amsmath, amssymb}
+\usepackage{graphicx}
+\usepackage{geometry}
+\usepackage{fancyhdr}
+\usepackage{hyperref}
+\usepackage{enumitem}
+\usepackage{mathrsfs}
+\usepackage{float}
+\usepackage{setspace}
+\usepackage{parskip}
+\usepackage{tikz} % Tikz
+\usepackage{lmodern}
+\usepackage{datetime2}  % ISO8601
+\usepackage{breqn}   % Para que las ecuaciones largas se partan automáticamente
+\usepackage{bm} % Para negrita en símbolos
+\usepackage{tikz}
+\usepackage{booktabs}
+\usepackage{stmaryrd}
+\usepackage{comment}
+
+% Márgenes
+\geometry{
+  top=2.5cm,
+  bottom=2.5cm,
+  left=2cm,
+  right=2cm
+}
+
+% Espaciado
+\singlespacing
+
+% Definir formato de fecha ISO 8601 (YYYY-MM-DD)
+\newcommand{\mydate}{\DTMtoday}
+
+% Definir título
+\newcommand{\documenttitle}{Un acercamiento a la IA}
+
+% Materia o proyecto
+\newcommand{\materia}{Inteligencia Artificial y Mini-Robots (2023251)}
+
+% aumenta el espacio entre filas
+\renewcommand{\arraystretch}{1.5} 
+
+% Encabezado y pie de página
+\pagestyle{fancy}
+\fancyhf{}
+
+% Encabezado
+\fancyhead[RO]{\textbf{\materia}}         % derecha en páginas pares
+\fancyhead[LO]{\textit{\documenttitle}}   % izquierda en páginas pares
+
+\fancyhead[RE]{\textit{\documenttitle}}   % derecha en páginas impares
+\fancyhead[LE]{\textbf{\materia}}         % izquierda en páginas impares
+
+% Pie de página
+\fancyfoot[LE,RO]{\textit{Universidad Nacional de Colombia}}
+\fancyfoot[RE,LO]{\textbf{\thepage}}
+
+% Línea superior activada
+\renewcommand{\headrulewidth}{0.4pt}
+% Línea inferior activada
+\renewcommand{\footrulewidth}{0.4pt} 
+
+% Título
+\begin{document}
+\noindent
+\begin{minipage}[c]{0.20\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{0.img/UN.png}
+\end{minipage}\hfill
+\begin{minipage}[c]{0.75\textwidth}
+    \textbf{\LARGE{\documenttitle}} \\[0.1cm]
+    \hrule
+    \vspace{0.1cm}
+    \textbf{\materia} \\[0.3cm]
+    \large{Karen Lorena Ortegate Leon, \textit{kortegate@unal.edu.co}} \\[0.1cm]
+    \large{Julián Mateo Vargas Riveros, \textit{jvargasri@unal.edu.co}} \\[0.1cm]
+    $\boxed{\text{\DTMtoday}}$ % Fecha
+\end{minipage}
+
+
+% Portada con título y autores
+
+
+% Contenido del documento:
+
+
+
+
+
+\bibliography{bibliografia}
+\bibliographystyle{IEEEtran}
+
+\end{document}
