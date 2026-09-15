@@ -22,6 +22,9 @@
 \usepackage{booktabs}
 \usepackage{stmaryrd}
 \usepackage{comment}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage[hidelinks]{hyperref}
 
 % Márgenes
 \geometry{
@@ -78,7 +81,8 @@
     \hrule
     \vspace{0.1cm}
     \textbf{\materia} \\[0.3cm]
-    \large{Karen Lorena Ortegate Leon, \textit{kortegate@unal.edu.co}} \\[0.1cm]
+    \large{Karol Natalia Bulla Garcia, \textit{kbulla@unal.edu.co}} \\[0.1cm]
+    \large{Diego Fernando Bustos Horta, \textit{dbustosh@unal.edu.co}} \\[0.1cm]
     \large{Julián Mateo Vargas Riveros, \textit{jvargasri@unal.edu.co}} \\[0.1cm]
     $\boxed{\text{\DTMtoday}}$ % Fecha
 \end{minipage}
@@ -89,11 +93,253 @@
 
 % Contenido del documento:
 
+\section{Ejercicios}
+
+\subsection{Definiciones de inteligencia artificial y comparación con el capítulo}
+
+Para este ejercicio consultamos a ChatGPT, Gemini, Claude y DeepSeek. A continuación, resumimos sus respuestas y las comparamos con los enfoques presentados en el capítulo \cite{martinez2026}.
+
+\paragraph{ChatGPT.}
+Define la inteligencia artificial como el campo que desarrolla sistemas capaces de percibir, razonar, aprender, generar contenido y tomar decisiones para alcanzar objetivos bajo ciertas condiciones y restricciones. Esta definición reúne varios enfoques del capítulo: la representación del conocimiento se relaciona con la IA simbólica; el aprendizaje, con el enfoque de datos; y la percepción y la toma de decisiones, con los agentes inteligentes. Aunque es amplia, no menciona directamente la inspiración biológica ni la reproducción del pensamiento humano.
+
+\paragraph{Gemini.}
+Presenta la IA como un campo de la informática que desarrolla sistemas para realizar tareas como razonar, resolver problemas, reconocer patrones y tomar decisiones. Aclara que no es necesario imitar el pensamiento humano ni aprender siempre de datos, porque también existen sistemas basados en reglas. Esta respuesta coincide con la diversidad de enfoques del capítulo y destaca especialmente los agentes que procesan información del entorno para alcanzar objetivos. También distingue la IA como campo general, el aprendizaje automático como una parte de ella y la IA generativa como una especialización del aprendizaje automático. Consideramos que esta distinción ayuda a entender por qué la IA no se limita a herramientas como los chatbots.
+
+\paragraph{Claude.}
+Describe la IA como la construcción de sistemas que realizan tareas asociadas con capacidades cognitivas humanas, sin necesidad de reproducir sus mecanismos biológicos. Su principal diferencia frente a las otras respuestas es que no considera indispensable actuar sobre el mundo: menciona que un clasificador de imágenes puede ser IA sin ejecutar una acción física. Esto complementa el enfoque de agentes del capítulo, aunque entendemos que una acción también puede ser digital, como entregar una clasificación. Además, reconoce tanto el aprendizaje de datos como los métodos simbólicos, por lo que no reduce toda la IA a una sola técnica.
+
+\paragraph{DeepSeek.}
+Define la IA como una disciplina que construye sistemas capaces de percibir, razonar, decidir, aprender o generar contenido. Destaca que lo importante es alcanzar objetivos y producir resultados útiles, sin exigir que el sistema piense como una persona. Esta idea se relaciona principalmente con los agentes inteligentes del capítulo. También diferencia los métodos simbólicos de los conexionistas, cuya inspiración en las redes neuronales biológicas no implica reproducir exactamente el cerebro. Finalmente, explica que el aprendizaje automático y la IA generativa forman parte de la IA, pero no abarcan todo el campo.
+
+\paragraph{Comparación general.}
+Las cuatro respuestas coinciden en relacionar la IA con capacidades como el razonamiento, el aprendizaje y la solución de problemas. También permiten reconocer que un sistema puede obtener resultados considerados inteligentes mediante mecanismos diferentes de los humanos. Esto se relaciona con la definición inicial del capítulo, que toma como referencia el comportamiento observable de la máquina, más que la forma exacta en que llega al resultado.
+
+Encontramos diferencias en el énfasis de cada respuesta: ChatGPT reúne capacidades y métodos; Gemini resalta la variedad de enfoques y la relación entre IA, aprendizaje automático e IA generativa; Claude introduce una discusión sobre qué significa actuar; y DeepSeek destaca el cumplimiento de objetivos. Sin embargo, ninguna desarrolla los cinco enfoques del capítulo con el mismo detalle, especialmente los sistemas bioinspirados y el estudio del pensamiento humano.
+
+Como grupo, consideramos que las respuestas son compatibles con buena parte del documento, pero el capítulo ofrece una visión más amplia de las formas de abordar la IA. También destaca aspectos que las definiciones apenas mencionan, como la adaptación, la incertidumbre y el tiempo disponible para resolver un problema. Por eso, entendemos la IA como un campo que combina diferentes métodos según el problema, y no solamente como sistemas que aprenden de datos o generan contenido.
+
+\subsection{Definición propia de inteligencia artificial}
+
+Como propuesta de definición propia, se plantea:
+
+\begin{quote}
+La inteligencia artificial es el conjunto de métodos que permite construir sistemas capaces de interpretar información, representar conocimiento y seleccionar respuestas o acciones para resolver problemas y alcanzar objetivos, utilizando razonamiento, búsqueda o aprendizaje, dentro de las restricciones de tiempo, recursos e incertidumbre de su entorno.
+\end{quote}
+
+\subsection{Análisis del video y relación con el documento}
+
+\paragraph{Alcance del análisis.}
+
+El enlace corresponde al video de WION titulado
+\textit{Gravitas: These robots can produce babies |
+`Xenobots' capable of `self-replicating'}, publicado el
+30 de noviembre de 2021 \cite{wion2021}.
+No se dispuso de su transcripción completa; por ello, el análisis
+se centra en el fenómeno anunciado en su título y en la explicación
+publicada por el equipo investigador, sin atribuir al video
+afirmaciones específicas que no pudieron verificarse.
+
+\paragraph{Descripción del fenómeno.}
+
+Los xenobots son estructuras vivas construidas con células de la
+rana \textit{Xenopus laevis}. Bajo condiciones experimentales,
+pueden reunir células dispersas y formar agrupaciones que
+posteriormente desarrollan movimiento. El equipo utilizó un
+algoritmo evolutivo para explorar formas corporales en simulación;
+una geometría semejante a una letra C favoreció este proceso
+\cite{wyss2021}.
+
+\paragraph{Relación con los sistemas bioinspirados.}
+
+El caso permite distinguir dos niveles. En el diseño se utiliza
+un procedimiento computacional inspirado en la evolución. En el
+resultado se emplean células vivas como material de construcción.
+Por tanto, la relación con la biología aparece tanto en el método
+de búsqueda como en el sistema obtenido.
+
+Esto conecta con el capítulo, que presenta los mecanismos de los
+seres vivos como fuente de herramientas para solucionar problemas.
+Además, muestra que la IA no se limita a redes neuronales o
+modelos generativos de lenguaje.
+
+\paragraph{Relación con los sistemas complejos.}
+
+Desde el marco del documento, las células pueden interpretarse
+como componentes cuyo comportamiento colectivo depende de sus
+interacciones y de su organización. La capacidad del conjunto no
+se explica únicamente enumerando las propiedades de una célula
+aislada.
+
+Esta interpretación corresponde al concepto de emergencia:
+al cambiar las relaciones y la disposición de los componentes,
+puede cambiar el comportamiento global del sistema. Por ello,
+la forma corporal también es una variable de diseño relevante.
+
+\paragraph{Relación con el enfoque de agentes y la IA física.}
+
+El ejemplo permite discutir sistemas que interactúan materialmente
+con un entorno. Sin embargo, haber sido diseñado mediante IA no
+implica que cada xenobot ejecute internamente un algoritmo de
+razonamiento o posea un modelo mental.
+
+La conexión con la IA física se encuentra en el paso del diseño
+computacional a un comportamiento material. Debe distinguirse
+entre la inteligencia del procedimiento utilizado para diseñar
+el sistema y las capacidades que efectivamente posee el
+sistema construido.
+
+\paragraph{Lectura crítica.}
+
+La expresión ``producir bebés'' es una simplificación periodística.
+El fenómeno descrito es una replicación cinemática mediante la
+agrupación de células disponibles en un entorno preparado
+\cite{wyss2021}. No demuestra por sí mismo conciencia, inteligencia
+general o reproducción ilimitada.
+
+El caso también invita a matizar la afirmación del capítulo sobre
+la imposibilidad de predecir sistemas complejos. La complejidad
+puede limitar la predicción exacta, pero no impide necesariamente
+construir modelos aproximados, contrastar hipótesis o identificar
+condiciones que favorezcan un comportamiento.
+
+En consecuencia, el aporte principal de este ejemplo es mostrar
+cómo la búsqueda computacional y la experimentación biológica
+pueden complementarse para explorar diseños difíciles de obtener
+únicamente mediante intuición.
 
 
+\subsection{Resumen sobre NVIDIA Cosmos}
+
+NVIDIA Cosmos es una plataforma orientada al desarrollo de
+inteligencia artificial física mediante modelos fundacionales
+del mundo. Estos modelos permiten representar y generar
+evoluciones posibles de entornos, apoyando aplicaciones de
+robótica, vehículos autónomos y visión industrial
+\cite{nvidiaCosmos}.
+
+Entre sus funciones se encuentran la generación de datos
+sintéticos, la predicción de situaciones futuras y el análisis
+de interacciones físicas. La plataforma también ofrece
+herramientas para preparar datos, adaptar modelos y evaluar
+resultados. NVIDIA presenta Cosmos 3 como un modelo que integra
+razonamiento, generación del mundo y generación de acciones
+\cite{nvidiaCosmos}.
+
+Una aplicación consiste en generar variaciones de una escena
+para entrenar un sistema bajo diferentes condiciones de
+iluminación, clima o distribución de objetos. Esto amplía la
+diversidad de ejemplos disponibles y reduce la dependencia
+exclusiva de grabaciones reales.
+
+Como interpretación desde el capítulo, Cosmos conecta el enfoque
+basado en datos con los agentes y la IA física: utiliza información
+para apoyar sistemas que deben actuar sobre un entorno. Sin
+embargo, generar escenas plausibles no garantiza exactitud física
+ni seguridad operativa; la transferencia al mundo real requiere
+validación experimental.
 
 
-\bibliography{bibliografia}
-\bibliographystyle{IEEEtran}
+\subsection{Planes del Gobierno de Colombia respecto a la IA}
+
+\paragraph{Política nacional.}
+
+Para este ejercicio se considera el Gobierno de Colombia. El
+Documento CONPES 4144, aprobado el 14 de febrero de 2025, establece
+la Política Nacional de Inteligencia Artificial, con horizonte
+hasta 2030 y un plan de 106 acciones \cite{conpes4144}.
+
+Sus líneas principales comprenden:
+
+\begin{enumerate}
+    \item \textbf{Ética y gobernanza:}
+    fortalecer la coordinación y el desarrollo responsable de IA.
+
+    \item \textbf{Datos e infraestructura:}
+    mejorar las condiciones tecnológicas y la disponibilidad
+    de datos pertinentes.
+
+    \item \textbf{Investigación, desarrollo e innovación:}
+    impulsar capacidades para producir y adaptar soluciones.
+
+    \item \textbf{Talento y capacidades:}
+    fortalecer conocimientos y competencias para desarrollar
+    y utilizar estas tecnologías.
+
+    \item \textbf{Gestión de riesgos:}
+    abordar posibles efectos negativos derivados de su uso.
+
+    \item \textbf{Adopción y aprovechamiento:}
+    promover aplicaciones que generen beneficios económicos
+    y sociales.
+\end{enumerate}
+
+Estas líneas describen compromisos de política pública; su
+formulación no demuestra que todas las acciones hayan sido
+ejecutadas \cite{conpes4144}.
+
+\paragraph{Relación con el capítulo y valoración.}
+
+La política se relaciona con el carácter estratégico de la IA
+señalado en el documento. Su desarrollo requiere más que adquirir
+herramientas: también exige conocimiento, infraestructura,
+coordinación institucional y evaluación de resultados.
+
+Desde mi perspectiva, el éxito debería medirse por problemas
+concretos resueltos y beneficios verificables. Por ejemplo, sería
+relevante evaluar mejoras en servicios públicos, productividad,
+acceso educativo y reducción de brechas territoriales.
+
+También resulta necesario examinar la calidad de los datos.
+Aunque el capítulo los presenta como registros de hechos reales,
+pueden contener errores, omisiones o sesgos. Por tanto, disponer
+de más información no garantiza automáticamente mejores decisiones.
+
+Una estrategia nacional sólida debe combinar formación técnica,
+investigación y criterios de evaluación que permitan determinar
+cuándo una aplicación de IA aporta valor y cuándo sus resultados
+no son suficientemente confiables.
+
+
+\subsection{Uso de herramientas de inteligencia artificial generativa}
+
+Para desarrollar estos ejercicios utilizamos ChatGPT, Gemini, Claude y DeepSeek. En el ejercicio de comparación empleamos el siguiente prompt: ``Define inteligencia artificial en un párrafo. Explica si requiere imitar el pensamiento humano, aprender de datos o actuar para alcanzar objetivos. Aclara la relación entre inteligencia artificial, aprendizaje automático e inteligencia artificial generativa''.
+
+Las herramientas nos sirvieron para obtener diferentes definiciones de IA, compararlas con los enfoques estudiados en el capítulo y organizar la información consultada sobre los xenobots, NVIDIA Cosmos y los planes del Gobierno colombiano. Las respuestas fueron revisadas y contrastadas con el documento del curso y con fuentes externas, ya que los modelos pueden simplificar conceptos, omitir información o producir datos incorrectos.
+
+\begin{thebibliography}{9}
+
+\bibitem{martinez2026}
+Martínez P., J. J. (2026).
+\textit{Panorama de la IA}.
+Material del curso, septiembre de 2026.
+Archivo proporcionado: \texttt{T1(1).md}.
+
+\bibitem{wion2021}
+WION (2021).
+\textit{Gravitas: These robots can produce babies |
+`Xenobots' capable of `self-replicating'}.
+YouTube, 30 de noviembre.
+\url{https://www.youtube.com/watch?v=JsmKUCiPHUY}
+
+\bibitem{wyss2021}
+Brown, J. (2021).
+\textit{Team builds first living robots---that can reproduce}.
+Wyss Institute, Harvard University, 29 de noviembre.
+\url{https://wyss.harvard.edu/news/team-builds-first-living-robots-that-can-reproduce/}
+
+\bibitem{nvidiaCosmos}
+NVIDIA (s.\,f.).
+\textit{NVIDIA Cosmos: Physical AI with World Foundation Models}.
+Consultado el 15 de septiembre de 2026.
+\url{https://www.nvidia.com/en-us/ai/cosmos/}
+
+\bibitem{conpes4144}
+Departamento Nacional de Planeación (2025).
+\textit{Documento CONPES 4144:
+Política Nacional de Inteligencia Artificial}.
+14 de febrero de 2025.
+\url{https://colaboracion.dnp.gov.co/CDT/Conpes/Econ%C3%B3micos/4144.pdf}
+
+\end{thebibliography}
 
 \end{document}
