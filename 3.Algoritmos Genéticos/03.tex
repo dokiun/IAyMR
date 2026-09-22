@@ -1,0 +1,449 @@
+\documentclass[14pt,twoside]{article}
+
+% Paquetes a utilizar
+\usepackage[utf8]{inputenc}
+\usepackage[spanish]{babel}
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage{geometry}
+\usepackage{fancyhdr}
+\usepackage[hidelinks]{hyperref}
+\usepackage{enumitem}
+\usepackage{setspace}
+\usepackage{parskip}
+\usepackage{float}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{lmodern}
+\usepackage{datetime2}
+
+% Márgenes
+\geometry{
+  top=2.5cm,
+  bottom=2.5cm,
+  left=2cm,
+  right=2cm
+}
+
+% Espaciado
+\singlespacing
+
+% Definir formato de fecha ISO 8601 (YYYY-MM-DD)
+\newcommand{\mydate}{\DTMtoday}
+
+% Definir título
+\newcommand{\documenttitle}{Algoritmos Genéticos}
+
+% Materia o proyecto
+\newcommand{\materia}{Inteligencia Artificial y Mini-Robots (2023251)}
+
+% Aumenta el espacio entre filas
+\renewcommand{\arraystretch}{1.5}
+
+% Encabezado y pie de página
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[RO]{\textbf{\materia}}
+\fancyhead[LO]{\textit{\documenttitle}}
+\fancyhead[RE]{\textit{\documenttitle}}
+\fancyhead[LE]{\textbf{\materia}}
+\fancyfoot[LE,RO]{\textit{Universidad Nacional de Colombia}}
+\fancyfoot[RE,LO]{\textbf{\thepage}}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0.4pt}
+
+\begin{document}
+
+% Título
+\noindent
+\begin{minipage}[c]{0.20\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{0.img/UN.png}
+\end{minipage}\hfill
+\begin{minipage}[c]{0.75\textwidth}
+    \textbf{\LARGE{\documenttitle}} \\[0.1cm]
+    \hrule
+    \vspace{0.1cm}
+    \textbf{\materia} \\[0.3cm]
+    \large{Diego Fernando Bustos Horta, \textit{dbustosh@unal.edu.co}} \\[0.1cm]
+    \large{Julián Mateo Vargas Riveros, \textit{jvargasri@unal.edu.co}} \\[0.1cm]
+    $\boxed{\text{\DTMtoday}}$
+\end{minipage}
+
+\vspace{0.7cm}
+
+\section*{3.10 Ejercicios y Problemas}
+
+El enunciado propone seis ejercicios y solicita desarrollar tres de ellos utilizando
+las librerías y herramientas disponibles. En este documento se desarrollan los
+Ejercicios 1, 3 y 5, buscando cubrir tres formas diferentes de aplicar un Algoritmo
+Genético: optimización numérica, optimización de un problema de despacho y evolución
+de cadenas de caracteres. El procedimiento sigue la estructura presentada en el
+material: población inicial, evaluación de aptitud, selección, cruce, mutación y
+criterio de parada.
+
+\paragraph{Ejercicio 1. Maximización de una función numérica.}
+
+Se desea maximizar la función
+\[
+f(x)=x\sin(10\pi x)+1,
+\qquad x\in[0,1].
+\]
+
+Para aplicar el Algoritmo Genético Simple se utiliza una representación binaria. Se
+escoge una longitud de cromosoma de $l=12$ bits, por lo que un cromosoma representa
+un número decimal entre $0$ y $2^{12}-1=4095$. La decodificación utilizada es
+\[
+x=\frac{D}{2^{12}-1}=\frac{D}{4095},
+\]
+donde $D$ es el valor decimal de la cadena binaria.
+
+Los parámetros de la simulación son:
+
+\begin{table}[H]
+\centering
+\caption{Parámetros utilizados en el Algoritmo Genético del Ejercicio 1.}
+\begin{tabularx}{0.82\textwidth}{>{\centering\arraybackslash}m{0.45\textwidth} >{\centering\arraybackslash}X}
+\toprule
+Parámetro & Valor \\
+\midrule
+Longitud del cromosoma, $l$ & 12 bits \\
+Tamaño de población, $K$ & 50 \\
+Máximo de generaciones, $M$ & 80 \\
+Probabilidad de mutación, $p_m$ & 0.01 \\
+Selección & Ruleta proporcional a la aptitud \\
+Cruce & Un punto \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+La función de aptitud puede utilizarse directamente como
+\[
+\operatorname{Apt}(x)=f(x),
+\]
+porque en el intervalo considerado la función toma valores positivos. Por tanto,
+los cromosomas que representan valores de $x$ con mayor valor de $f(x)$ tienen mayor
+probabilidad de ser seleccionados como padres.
+
+Después de generar la población inicial se realizan repetidamente los siguientes
+pasos: decodificación de los cromosomas, cálculo de la aptitud, selección por ruleta,
+cruce en un punto y mutación de bits con probabilidad $p_m$. En cada generación se
+conserva para el análisis la mejor aptitud encontrada hasta ese momento.
+
+El Algoritmo Genético obtuvo como mejor cromosoma
+\[
+\boxed{110110011110}
+\]
+con valor decimal
+\[
+D=3486.
+\]
+Por tanto,
+\[
+x=\frac{3486}{4095}=0.851282,
+\]
+y la aptitud correspondiente es
+\[
+f(0.851282)=1.850592.
+\]
+La mejor solución fue encontrada en la generación 43.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.82\textwidth]{figuras/ejercicio1_funcion.png}
+\caption{Función objetivo y solución encontrada por el Algoritmo Genético.}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.82\textwidth]{figuras/ejercicio1_convergencia.png}
+\caption{Evolución de la mejor aptitud y de la aptitud promedio en el Ejercicio 1.}
+\end{figure}
+
+El resultado muestra que el Algoritmo Genético encuentra una solución próxima al
+máximo de la función aun cuando el cromosoma solamente dispone de 12 bits. La
+resolución de la codificación es
+\[
+\Delta x=\frac{1}{4095}\approx2.44\times10^{-4},
+\]
+por lo que existe una diferencia entre la solución discreta representada por el
+cromosoma y cualquier valor real del intervalo.
+
+\paragraph{Ejercicio 3. Despacho de energía eléctrica.}
+
+Se tiene una empresa proveedora de energía que dispone de cuatro plantas de
+generación para atender las demandas de Cali, Bogotá, Medellín y Barranquilla.
+Las capacidades máximas y las demandas indicadas en el enunciado son:
+
+\begin{table}[H]
+\centering
+\caption{Capacidad de generación y demanda diaria.}
+\begin{tabularx}{0.82\textwidth}{>{\centering\arraybackslash}m{0.30\textwidth}>{\centering\arraybackslash}m{0.24\textwidth}>{\centering\arraybackslash}X}
+\toprule
+Planta / ciudad & Capacidad de generación (GW) & Demanda (GW) \\
+\midrule
+Cali & 3 & 4 \\
+Bogotá & 6 & 3 \\
+Medellín & 5 & 5 \\
+Barranquilla & 4 & 3 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+La demanda total es
+\[
+4+3+5+3=15\ \text{GW},
+\]
+mientras que la capacidad total disponible es
+\[
+3+6+5+4=18\ \text{GW}.
+\]
+Por tanto, existe capacidad suficiente para satisfacer la demanda.
+
+Para representar una solución se utilizan 15 genes enteros. Cada gen representa
+una unidad de $1$ GW de demanda y su valor indica la planta que suministra dicha
+unidad. Los cuatro primeros genes corresponden a las cuatro unidades requeridas por
+Cali, los tres siguientes a Bogotá, los cinco siguientes a Medellín y los tres
+últimos a Barranquilla. De esta manera, las demandas se satisfacen exactamente por
+la construcción del cromosoma y únicamente es necesario controlar las capacidades de
+las plantas.
+
+Sea $X=[x_{ij}]$ la matriz de despacho, donde $x_{ij}$ es la cantidad de energía
+enviada desde la planta $i$ hacia la ciudad $j$. El costo total se calcula, siguiendo
+la escala numérica de las tablas del ejercicio, como
+\[
+C(X)=\sum_{i=1}^{4}\sum_{j=1}^{4}
+\left(g_i+t_{ij}\right)x_{ij},
+\]
+donde $g_i$ representa el costo de generación de la planta $i$ y $t_{ij}$ el costo
+de transporte hacia la ciudad $j$.
+
+\textit{Nota:} el enunciado presenta los costos de generación en \$/kWh y los de
+transporte por GW. Para no introducir una conversión no especificada en el problema,
+se conserva directamente la escala numérica de los valores proporcionados y se
+interpreta $C(X)$ como un costo compuesto de comparación entre despachos.
+
+Las restricciones de capacidad son
+\[
+\sum_{j=1}^{4}x_{ij}\leq \operatorname{Cap}_i,
+\qquad i=1,\ldots,4.
+\]
+
+Para incorporar estas restricciones a la función de aptitud se utiliza una
+penalización. Sea
+\[
+E(X)=\sum_{i=1}^{4}
+\max\left(0,\sum_{j=1}^{4}x_{ij}-\operatorname{Cap}_i\right),
+\]
+la cantidad total de GW que exceden las capacidades. La aptitud se define como
+\[
+\operatorname{Apt}(X)=
+\frac{1}{1+C(X)+10000E(X)}.
+\]
+Así, una solución factible, con $E(X)=0$, es favorecida frente a una solución que
+viole las restricciones.
+
+Los parámetros utilizados fueron:
+
+\begin{table}[H]
+\centering
+\caption{Parámetros utilizados en el Algoritmo Genético del Ejercicio 3.}
+\begin{tabularx}{0.82\textwidth}{>{\centering\arraybackslash}m{0.45\textwidth}>{\centering\arraybackslash}X}
+\toprule
+Parámetro & Valor \\
+\midrule
+Número de genes & 15 \\
+Tamaño de población, $K$ & 200 \\
+Máximo de generaciones, $M$ & 1000 \\
+Probabilidad de mutación, $p_m$ & 0.02 \\
+Selección & Ruleta proporcional a la aptitud \\
+Cruce & Un punto \\
+Elitismo & 2 individuos \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+El mejor despacho encontrado fue
+\[
+X^*=\begin{bmatrix}
+3&0&0&0\\
+1&3&0&2\\
+0&0&5&0\\
+0&0&0&1
+\end{bmatrix}.
+\]
+Las filas corresponden a las plantas de Cali, Bogotá, Medellín y Barranquilla,
+y las columnas a las ciudades de Cali, Bogotá, Medellín y Barranquilla.
+
+En forma tabular:
+
+\begin{table}[H]
+\centering
+\caption{Despacho de energía obtenido mediante el AG, en GW.}
+\begin{tabularx}{0.92\textwidth}{>{\centering\arraybackslash}m{0.20\textwidth}>{\centering\arraybackslash}m{0.14\textwidth}>{\centering\arraybackslash}m{0.14\textwidth}>{\centering\arraybackslash}m{0.16\textwidth}>{\centering\arraybackslash}m{0.18\textwidth}}
+\toprule
+Planta & Cali & Bogotá & Medellín & Barranquilla \\
+\midrule
+Planta C & 3 & 0 & 0 & 0 \\
+Planta B & 1 & 3 & 0 & 2 \\
+Planta M & 0 & 0 & 5 & 0 \\
+Planta Ba & 0 & 0 & 0 & 1 \\
+\midrule
+Demanda atendida & 4 & 3 & 5 & 3 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+La solución utiliza 3 GW de la planta C, 6 GW de la planta B, 5 GW de la planta M
+y 1 GW de la planta Ba. Ninguna planta supera su capacidad máxima.
+
+El costo de generación es
+\[
+C_{\mathrm{gen}}=(3)(680)+(6)(720)+(5)(660)+(1)(750)
+=10410.
+\]
+El costo de transporte es
+\[
+\begin{aligned}
+C_{\mathrm{trans}}={}&(3)(1)+(1)(4)+(3)(1)+(2)(5)\\
+&+(5)(1)+(1)(1)=26.
+\end{aligned}
+\]
+Por tanto,
+\[
+\boxed{C_{\mathrm{total}}=10410+26=10436}.
+\]
+
+El AG encontró esta solución en la generación 306. La evolución del mejor costo se
+muestra en la siguiente figura.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.82\textwidth]{figuras/ejercicio3_convergencia.png}
+\caption{Convergencia del mejor costo acumulado en el Ejercicio 3.}
+\end{figure}
+
+La distribución también puede visualizarse como una matriz de despacho:
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.76\textwidth]{figuras/ejercicio3_despacho.png}
+\caption{Representación de la matriz de despacho obtenida.}
+\end{figure}
+
+El ejercicio muestra cómo un problema de optimización con variables discretas y
+restricciones puede representarse mediante un cromosoma y resolverse evolucionando
+una población de alternativas. En este caso, la penalización permite incorporar las
+restricciones de capacidad dentro del proceso de evaluación.
+
+\paragraph{Ejercicio 5. Evolución de una palabra mediante un Algoritmo Genético.}
+
+El objetivo es generar inicialmente una población de cadenas y hacerlas evolucionar
+hasta alcanzar una palabra objetivo. Para mostrar el funcionamiento del AG se toma
+como palabra objetivo
+\[
+\boxed{\texttt{ALGORITMOS}}.
+\]
+
+Cada cromosoma tiene 10 genes y cada gen es una letra mayúscula del alfabeto inglés.
+A diferencia del Algoritmo Genético Simple binario, en este caso los genes no son
+bits, sino caracteres. Esto es consistente con la explicación del material, donde se
+indica que un gen puede manejar diferentes tipos de datos dependiendo del problema.
+
+La función de aptitud cuenta cuántas posiciones coinciden exactamente con la palabra
+objetivo:
+\[
+\operatorname{Apt}(w)=
+\sum_{i=1}^{10}I(w_i=\text{ALGORITMOS}_i),
+\]
+donde $I(\cdot)$ vale 1 cuando la condición es verdadera y 0 en caso contrario.
+Por tanto,
+\[
+0\leq\operatorname{Apt}(w)\leq10.
+\]
+
+Los parámetros usados fueron:
+
+\begin{table}[H]
+\centering
+\caption{Parámetros utilizados en el Algoritmo Genético del Ejercicio 5.}
+\begin{tabularx}{0.82\textwidth}{>{\centering\arraybackslash}m{0.45\textwidth}>{\centering\arraybackslash}X}
+\toprule
+Parámetro & Valor \\
+\midrule
+Longitud del cromosoma & 10 caracteres \\
+Tamaño de población, $K$ & 60 \\
+Máximo de generaciones, $M$ & 100 \\
+Probabilidad de mutación, $p_m$ & 0.04 \\
+Selección & Ruleta proporcional a la aptitud \\
+Cruce & Un punto \\
+Elitismo & 2 individuos \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+En cada generación, las cadenas con mayor número de caracteres correctos tienen
+mayor probabilidad de aportar descendencia. Durante el cruce se intercambia una
+parte del contenido de dos cadenas, mientras que la mutación reemplaza una letra por
+otra seleccionada aleatoriamente.
+
+Algunas generaciones representativas fueron:
+
+\begin{table}[H]
+\centering
+\caption{Evolución de la mejor cadena durante la simulación.}
+\begin{tabularx}{0.86\textwidth}{>{\centering\arraybackslash}m{0.18\textwidth}>{\centering\arraybackslash}m{0.40\textwidth}>{\centering\arraybackslash}m{0.20\textwidth}X}
+\toprule
+Generación & Mejor cadena & Aptitud & Aptitud promedio \\
+\midrule
+0 & \texttt{YOGJRGCXCY} & 2/10 & 0.37 \\
+10 & \texttt{AOGJRIPXOS} & 6/10 & 3.58 \\
+20 & \texttt{ALGJRIPXOS} & 7/10 & 4.95 \\
+30 & \texttt{ALGJRIPMOS} & 8/10 & 5.85 \\
+50 & \texttt{ALGJRIPMOS} & 8/10 & 6.20 \\
+70 & \texttt{ALGORISMOS} & 9/10 & 6.60 \\
+80 & \texttt{ALGORISMOS} & 9/10 & 6.63 \\
+84 & \texttt{ALGORITMOS} & 10/10 & 7.07 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+En la generación 84 se obtuvo exactamente la palabra objetivo:
+\[
+\boxed{\texttt{ALGORITMOS}}.
+\]
+La aptitud alcanzó entonces el valor máximo de $10$.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.82\textwidth]{figuras/ejercicio5_convergencia.png}
+\caption{Evolución de la coincidencia de caracteres en el Ejercicio 5.}
+\end{figure}
+
+La simulación demuestra que el principio de evolución no está limitado a genes
+binarios. En este caso, el cromosoma está formado por caracteres y los operadores
+genéticos permiten transformar cadenas aleatorias hasta alcanzar la solución
+objetivo.
+
+Como elemento adicional para cumplir la parte sonora del ejercicio, la palabra final
+se sintetizó mediante un sistema de texto a voz como
+\texttt{ALGORITMOS}. El archivo de audio correspondiente se entrega junto con este
+documento.
+
+\paragraph{Conclusión.}
+
+Los tres ejercicios desarrollados muestran tres usos diferentes de los Algoritmos
+Genéticos. El primer ejercicio utiliza una codificación binaria para maximizar una
+función numérica. El segundo representa un problema de asignación y despacho mediante
+un cromosoma discreto y una función de aptitud con penalización por violaciones de
+restricciones. El tercero utiliza caracteres como genes para evolucionar una palabra
+hacia un objetivo determinado.
+
+En todos los casos se mantiene la misma estructura fundamental: una población de
+soluciones candidatas es evaluada mediante una función de aptitud y posteriormente
+transformada mediante selección, cruce y mutación durante varias generaciones. De
+esta manera, el algoritmo explora el espacio de búsqueda y utiliza la información de
+las soluciones con mayor aptitud para construir nuevas soluciones.
+
+\end{document}

@@ -1,0 +1,342 @@
+\documentclass[14pt,twoside]{article}
+
+% Paquetes a utilizar
+\usepackage[utf8]{inputenc}
+\usepackage[spanish]{babel}
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage{geometry}
+\usepackage{fancyhdr}
+\usepackage[hidelinks]{hyperref}
+\usepackage{enumitem}
+\usepackage{setspace}
+\usepackage{parskip}
+\usepackage{float}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{lmodern}
+\usepackage{datetime2}
+
+% Márgenes
+\geometry{
+  top=2.5cm,
+  bottom=2.5cm,
+  left=2cm,
+  right=2cm
+}
+
+% Espaciado
+\singlespacing
+
+% Definir formato de fecha ISO 8601 (YYYY-MM-DD)
+\newcommand{\mydate}{\DTMtoday}
+
+% Definir título
+\newcommand{\documenttitle}{Autómatas celulares}
+
+% Materia o proyecto
+\newcommand{\materia}{Inteligencia Artificial y Mini-Robots (2023251)}
+
+% Aumenta el espacio entre filas
+\renewcommand{\arraystretch}{1.5}
+
+% Encabezado y pie de página
+\pagestyle{fancy}
+\fancyhf{}
+
+% Encabezado
+\fancyhead[RO]{\textbf{\materia}}
+\fancyhead[LO]{\textit{\documenttitle}}
+\fancyhead[RE]{\textit{\documenttitle}}
+\fancyhead[LE]{\textbf{\materia}}
+
+% Pie de página
+\fancyfoot[LE,RO]{\textit{Universidad Nacional de Colombia}}
+\fancyfoot[RE,LO]{\textbf{\thepage}}
+
+% Líneas superior e inferior
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0.4pt}
+
+\begin{document}
+
+% Título
+\noindent
+\begin{minipage}[c]{0.20\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{0.img/UN.png}
+\end{minipage}\hfill
+\begin{minipage}[c]{0.75\textwidth}
+    \textbf{\LARGE{\documenttitle}} \\[0.1cm]
+    \hrule
+    \vspace{0.1cm}
+    \textbf{\materia} \\[0.3cm]
+    \large{Diego Fernando Bustos Horta, \textit{dbustosh@unal.edu.co}} \\[0.1cm]
+    \large{Julián Mateo Vargas Riveros, \textit{jvargasri@unal.edu.co}} \\[0.1cm]
+    $\boxed{\text{\DTMtoday}}$
+\end{minipage}
+
+\vspace{0.7cm}
+
+\section*{2.10 Ejercicios y Problemas}
+
+\paragraph{Ejercicio 1. Reglas básicas en diferentes escenarios.}
+
+Los comportamientos cotidianos pueden representarse mediante un Autómata Celular
+si cada persona se considera una célula, su comportamiento corresponde a su estado
+y las personas cercanas conforman su vecindad. Así, el estado siguiente de una
+célula depende del estado actual y de los estados de sus vecinos.
+
+\subparagraph{a) Casa.}
+
+Se considera un alfabeto binario
+\[
+\omega=\{0,1\},
+\]
+donde $0$ representa ``descanso'' y $1$ representa ``actividad''. Para una persona
+$c_i$, con una vecindad de radio $r=1$, se establecen las siguientes reglas:
+
+\begin{enumerate}[label=\arabic*.]
+    \item Si los dos vecinos se encuentran en estado $0$, la célula pasa a estado
+    $0$ en el siguiente ciclo.
+    \item Si los dos vecinos se encuentran en estado $1$, la célula pasa a estado
+    $1$.
+    \item Si los vecinos presentan estados diferentes, la célula conserva su estado.
+\end{enumerate}
+
+La transición local puede expresarse como
+\[
+c_i(t+1)=f\left(c_{i-1}(t),c_i(t),c_{i+1}(t)\right).
+\]
+
+La regla representa, de manera simplificada, una tendencia de las personas a
+sincronizar sus actividades con las personas cercanas.
+
+\subparagraph{b) Universidad.}
+
+Para este escenario se consideran tres estados:
+\[
+\omega=\{0,1,2\},
+\]
+donde $0$ corresponde a ``fuera de actividad académica'', $1$ a ``clase o estudio''
+y $2$ a ``desplazamiento''. La vecindad está formada por las personas más cercanas.
+
+Las reglas básicas son:
+
+\begin{enumerate}[label=\arabic*.]
+    \item Si la mayoría de los vecinos se encuentra en estado $1$, la célula adopta
+    el estado $1$.
+    \item Si la mayoría se encuentra en estado $2$, la célula adopta el estado $2$.
+    \item Si no existe una mayoría clara, la célula conserva su estado actual.
+\end{enumerate}
+
+Por ejemplo, si la mayoría de los compañeros se encuentra en clase, una persona que
+llega al salón tiende a adoptar ese mismo comportamiento. De forma semejante, una
+mayoría de personas desplazándose puede favorecer que una célula adopte el estado de
+desplazamiento.
+
+\subparagraph{c) Medio de transporte.}
+
+Cada automóvil puede modelarse como una célula y los vehículos ubicados adelante y
+a los lados constituyen su vecindad. Se utiliza nuevamente un alfabeto de tres estados:
+\[
+\omega=\{0,1,2\},
+\]
+donde $0$ representa ``detenido'', $1$ ``movimiento normal'' y $2$ ``reducción de
+velocidad''.
+
+Las reglas son:
+
+\begin{enumerate}[label=\arabic*.]
+    \item Si el vehículo ubicado adelante está detenido o demasiado cerca, la célula
+    pasa al estado $0$.
+    \item Si el vehículo de adelante se encuentra próximo pero en movimiento, la célula
+    pasa al estado $2$.
+    \item Si existe una distancia suficiente y no hay un obstáculo inmediato, la célula
+    permanece o pasa al estado $1$.
+\end{enumerate}
+
+La información necesaria para determinar el siguiente estado es local, por lo que una
+interacción de muchas células puede generar fenómenos globales como una congestión.
+
+\paragraph{Ejercicio 2. Modelo probabilístico de difusión de una enfermedad.}
+
+Se propone un modelo de difusión mediante un Autómata Celular probabilístico. Se utiliza
+un retículo bidimensional con vecindad de Moore y estados que representan diferentes
+condiciones de las personas y las celdas vacías.
+
+El retículo se define como una cuadrícula de $20\times20$ celdas y el alfabeto es
+\[
+\omega=\{N,S,C_s,C_a,C_t,P\},
+\]
+donde:
+
+\begin{itemize}
+    \item $N$: celda vacía;
+    \item $S$: persona susceptible y sana;
+    \item $C_s$: persona infectada con síntomas;
+    \item $C_a$: persona infectada asintomática;
+    \item $C_t$: persona en cuarentena o bajo atención médica;
+    \item $P$: persona recuperada.
+\end{itemize}
+
+La configuración inicial contiene 300 personas susceptibles, 5 personas con síntomas,
+5 personas asintomáticas y 90 celdas vacías, distribuidas aleatoriamente. Se utiliza la
+vecindad de Moore, que considera la célula central y sus ocho vecinos.
+
+Sea $n$ el número de vecinos infectados de una persona susceptible. Considerando como
+infectados los estados $C_s$, $C_a$ y $C_t$, se establece la probabilidad
+\[
+p_{\mathrm{inf}}(n)=\min(0.05n,0.90).
+\]
+
+Cuando ocurre el contagio, se asigna una probabilidad de $0.4$ al estado $C_a$ y una
+probabilidad de $0.6$ al estado $C_s$.
+
+Las demás reglas son:
+
+\begin{enumerate}[label=\arabic*.]
+    \item Una célula $C_s$ permanece en ese estado durante siete ciclos y posteriormente
+    pasa a $C_t$.
+    \item Una célula $C_a$ permanece durante treinta ciclos y después pasa a $P$.
+    \item Una célula $C_t$, después de veinte ciclos, pasa a $P$ con probabilidad $0.8$
+    y sale del retículo con probabilidad $0.2$.
+    \item Después de aplicar las reglas de enfermedad, cada persona puede desplazarse
+    hacia el Norte, Sur, Este u Oeste con probabilidad $0.25$, siempre que la celda de
+destino esté vacía.
+    \item Todas las células se actualizan en paralelo utilizando el estado del ciclo
+    anterior.
+\end{enumerate}
+
+En cada ciclo se pueden registrar
+\[
+N_t,\quad S_t,\quad C_{s,t},\quad C_{a,t},\quad C_{t,t},\quad P_t,
+\]
+así como el número acumulado de personas que salen del sistema. De esta manera se
+puede estudiar la evolución de la enfermedad, determinar el máximo número de infectados
+y observar el comportamiento final de la población. Al ser un modelo probabilístico,
+dos ejecuciones pueden producir resultados diferentes incluso con condiciones iniciales
+similares.
+
+\paragraph{Ejercicio 3. Robot con tres sensores de distancia.}
+
+Se considera un robot móvil que recorre un retículo bidimensional y posee tres sensores
+de distancia: central $C$, izquierdo $I$ y derecho $D$. De acuerdo con el modelo del
+material, los estados de los sensores son
+\[
+S_C=S_I=S_D=\{0,1,2\},
+\]
+donde el estado $0$ representa una distancia entre $0$ y $8$ cm, el estado $1$ una
+distancia entre $8$ y $16$ cm y el estado $2$ una distancia mayor que $16$ cm.
+
+Los motores izquierdo y derecho también tienen tres estados:
+\[
+S_{M_i}=S_{M_d}=\{0,1,2\},
+\]
+donde $0$ representa motor apagado, $1$ giro hacia adelante y $2$ giro hacia atrás.
+
+Se considera un espacio de $20\times20$ celdas, con cuatro obstáculos ubicados en
+\[
+(8,10),\qquad (13,14),\qquad (5,16),\qquad (17,6).
+\]
+El robot inicia en $(1,10)$ y está orientado hacia el Este.
+
+Para definir el comportamiento se utiliza la siguiente regla de transición:
+
+\begin{table}[H]
+\centering
+\caption{Reglas locales para el control del robot.}
+\begin{tabularx}{0.92\textwidth}{>{\centering\arraybackslash}m{0.16\textwidth}>{\centering\arraybackslash}m{0.28\textwidth}>{\centering\arraybackslash}m{0.19\textwidth}>{\centering\arraybackslash}X}
+\toprule
+$C$ & Condición lateral & $(M_i,M_d)$ & Acción \\
+\midrule
+$2$ & -- & $(1,1)$ & Avanzar \\
+$1$ & $d_I>d_D$ & $(0,1)$ & Girar a la izquierda \\
+$1$ & $d_I<d_D$ & $(1,0)$ & Girar a la derecha \\
+$1$ & $d_I=d_D$ & $(1,1)$ & Avanzar \\
+$0$ & -- & $(2,2)$ & Retroceder \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Cuando el sensor central detecta un obstáculo a una distancia inferior a $8$ cm, el
+robot retrocede. Cuando el obstáculo se encuentra entre $8$ y $16$ cm, el robot utiliza
+la información lateral para escoger una dirección de giro.
+
+La evolución puede describirse mediante la regla general
+\[
+\Phi(\eta_x^t)=S_x^{t+1},
+\]
+donde $\eta_x^t$ representa los estados de la vecindad sensorial en el instante $t$
+y $S_x^{t+1}$ representa el nuevo estado de la célula asociada al motor.
+
+De esta manera, una regla local basada solamente en la información proporcionada por
+los sensores permite obtener un comportamiento global de evasión de obstáculos.
+
+\paragraph{Ejercicio 4. Diagramas de Voronoi aplicados a una ciudad.}
+
+Se considera una ciudad pequeña representada mediante un plano de $100\times100$
+unidades. Sobre el plano se localizan tres tipos de servicios: farmacias, centros de
+atención en salud y colegios. Para cada grupo de servicios se construye un diagrama de
+Voronoi.
+
+Las ubicaciones hipotéticas son:
+
+\begin{table}[H]
+\centering
+\caption{Ubicación de los servicios en el plano.}
+\begin{tabularx}{0.85\textwidth}{>{\centering\arraybackslash}m{0.28\textwidth}>{\centering\arraybackslash}m{0.18\textwidth}>{\centering\arraybackslash}X}
+\toprule
+Servicio & Identificador & Coordenadas $(x,y)$ \\
+\midrule
+Farmacia & $F_1$ & $(15,75)$ \\
+Farmacia & $F_2$ & $(40,20)$ \\
+Farmacia & $F_3$ & $(70,80)$ \\
+Farmacia & $F_4$ & $(85,35)$ \\
+Farmacia & $F_5$ & $(55,50)$ \\
+Centro de salud & $S_1$ & $(20,25)$ \\
+Centro de salud & $S_2$ & $(60,70)$ \\
+Centro de salud & $S_3$ & $(85,75)$ \\
+Colegio & $C_1$ & $(25,60)$ \\
+Colegio & $C_2$ & $(50,15)$ \\
+Colegio & $C_3$ & $(75,40)$ \\
+Colegio & $C_4$ & $(90,15)$ \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Para un conjunto de puntos $F_j$, la región de Voronoi correspondiente a una farmacia
+$F_i$ está formada por todos los puntos $P$ que cumplen
+\[
+\operatorname{dist}(P,F_i)\leq\operatorname{dist}(P,F_j),
+\qquad j\neq i.
+\]
+
+Las fronteras del diagrama corresponden a puntos que se encuentran a igual distancia
+de dos servicios. Por tanto, cada región representa la zona de influencia espacial de
+uno de los servicios.
+
+\subparagraph{¿Puede faltar una droguería, un centro de atención de salud o un colegio?}
+
+Sí puede existir una zona con baja cobertura. Sin embargo, el diagrama de Voronoi por
+sí solo no permite afirmar que falte un servicio, porque únicamente mide proximidad
+espacial. Para establecer una posible deficiencia también deberían considerarse la
+población, la capacidad de atención, las vías disponibles y los tiempos de desplazamiento.
+
+Una región de Voronoi considerablemente grande puede indicar que una instalación es la
+más cercana para una extensión amplia del territorio. Esto puede servir como señal para
+realizar un análisis posterior de cobertura.
+
+\subparagraph{¿Existe alguna relación entre los diagramas?}
+
+Sí. Los tres diagramas representan el mismo territorio, pero utilizan diferentes
+conjuntos de puntos. Por ello, las fronteras de las regiones cambian de acuerdo con la
+ubicación de las farmacias, los centros de salud o los colegios. La comparación permite
+identificar sectores que se encuentran alejados simultáneamente de varios tipos de
+servicios.
+
+En un problema real, esta información podría combinarse con datos de población,
+movilidad y capacidad de atención para analizar la distribución espacial de los servicios.
+
+\end{document}
