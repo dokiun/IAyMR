@@ -1,0 +1,907 @@
+\documentclass[14pt,twoside]{article}
+
+% Paquetes a utilizar
+\usepackage[utf8]{inputenc}
+\usepackage[spanish]{babel}
+\usepackage{amsmath, amssymb}
+\usepackage{graphicx}
+\usepackage{geometry}
+\usepackage{fancyhdr}
+\usepackage[hidelinks]{hyperref}
+\usepackage{enumitem}
+\usepackage{mathrsfs}
+\usepackage{float}
+\usepackage{setspace}
+\usepackage{parskip}
+\usepackage{tikz}
+\usepackage{lmodern}
+\usepackage{datetime2}
+\usepackage{bm}
+\usepackage{booktabs}
+\usepackage{stmaryrd}
+\usepackage{comment}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{xcolor}
+\usepackage{listings}
+
+% Colores del estilo del documento de referencia
+\definecolor{pgfondo}{HTML}{F6F8FA}
+\definecolor{pgborde}{HTML}{D0D7DE}
+\definecolor{pgazul}{HTML}{0550AE}
+\definecolor{pgverde}{HTML}{116329}
+\definecolor{pggris}{HTML}{57606A}
+\definecolor{pgmorado}{HTML}{8250DF}
+
+\lstdefinestyle{pgbase}{
+    basicstyle=\ttfamily\footnotesize,
+    backgroundcolor=\color{pgfondo},
+    frame=single,
+    rulecolor=\color{pgborde},
+    framesep=6pt,
+    breaklines=true,
+    breakatwhitespace=false,
+    columns=fullflexible,
+    keepspaces=true,
+    showstringspaces=false,
+    tabsize=4,
+    captionpos=b,
+    aboveskip=1em,
+    belowskip=1em,
+    literate=
+        {á}{{\'a}}1 {é}{{\'e}}1 {í}{{\'i}}1
+        {ó}{{\'o}}1 {ú}{{\'u}}1 {ñ}{{\~n}}1
+        {Á}{{\'A}}1 {É}{{\'E}}1 {Í}{{\'I}}1
+        {Ó}{{\'O}}1 {Ú}{{\'U}}1 {Ñ}{{\~N}}1
+        {¿}{{?`}}1 {¡}{{!`}}1
+}
+
+\lstdefinestyle{pgpython}{
+    style=pgbase,
+    language=Python,
+    keywordstyle=\color{pgazul}\bfseries,
+    commentstyle=\color{pggris}\itshape,
+    stringstyle=\color{pgverde},
+    emph={np,pd,tf,keras,kagglehub,MLPClassifier,StandardScaler,Pipeline},
+    emphstyle=\color{pgmorado},
+    numbers=left,
+    numberstyle=\ttfamily\scriptsize\color{pggris},
+    numbersep=10pt
+}
+
+\lstdefinestyle{pgterminal}{
+    style=pgbase,
+    numbers=none
+}
+
+% Márgenes
+\geometry{
+  top=2.5cm,
+  bottom=2.5cm,
+  left=2cm,
+  right=2cm
+}
+
+\singlespacing
+\renewcommand{\arraystretch}{1.5}
+
+% Definiciones del documento
+\newcommand{\documenttitle}{Ejercicios de Redes Neuronales Artificiales}
+\newcommand{\materia}{Inteligencia Artificial y Mini-Robots (2023251)}
+\newcommand{\mydate}{\DTMdate{2026-10-04}}
+
+% Encabezado y pie de página
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[RO]{\textbf{\materia}}
+\fancyhead[LO]{\textit{\documenttitle}}
+\fancyhead[RE]{\textit{\documenttitle}}
+\fancyhead[LE]{\textbf{\materia}}
+\fancyfoot[LE,RO]{\textit{Universidad Nacional de Colombia}}
+\fancyfoot[RE,LO]{\textbf{\thepage}}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0.4pt}
+
+\begin{document}
+
+% Cabecera principal; usa el logo del ejemplo si existe.
+\noindent
+\begin{minipage}[c]{0.20\textwidth}
+    \centering
+    \IfFileExists{0.img/UN.png}{%
+        \includegraphics[width=\linewidth]{0.img/UN.png}%
+    }{%
+        \fbox{\parbox[c][2.6cm][c]{0.85\linewidth}{\centering\textbf{UN}\vspace{0.2cm}\\\scriptsize Universidad Nacional de Colombia}}%
+    }
+\end{minipage}\hfill
+\begin{minipage}[c]{0.75\textwidth}
+    \textbf{\LARGE{\documenttitle}} \\[0.1cm]
+    \hrule
+    \vspace{0.1cm}
+    \textbf{\materia} \\[0.3cm]
+    \large{Diego Fernando Bustos Horta, \textit{dbustosh@unal.edu.co}} \\[0.1cm]
+    \large{Julián Mateo Vargas Riveros, \textit{jvargasri@unal.edu.co}} \\[0.1cm]
+    $\boxed{\text{\mydate}}$
+\end{minipage}
+
+\vspace{0.5cm}
+
+\section{Planteamiento y metodología general}
+
+La sección 5.9 de la guía solicita cuatro ejercicios: dos redes neuronales para compuertas NAND y XOR a partir del programa \texttt{Clase\_NNA3}; una clasificación de prendas usando Fashion-MNIST y TensorFlow; un modelo construido a partir de un dataset obtenido mediante la librería de Kaggle para Python; y, finalmente, un punto libre. La guía presenta la neurona artificial mediante una combinación lineal de entradas, pesos y sesgo, seguida por una función de activación. También introduce las redes feed-forward, el aprendizaje supervisado, la función de pérdida y el algoritmo de retropropagación (backpropagation). \cite{martinez2026}
+
+El desarrollo se organizó para conservar esta misma secuencia conceptual. En los ejercicios 1 y 2 se parte de los pares entrada-rótulo, se realiza propagación hacia adelante y se evalúa el desempeño. En el ejercicio 3 se estudian explícitamente los \emph{features} y el rótulo del dataset antes de entrenar el modelo. El punto libre utiliza una red convolucional, puesto que la guía termina introduciendo convolución y \emph{pooling} como herramientas para problemas de visión computacional. \cite{martinez2026}
+
+\subsection{Entorno computacional}
+
+El siguiente comando instala las principales bibliotecas utilizadas en el informe:
+
+\begin{lstlisting}[style=pgterminal,caption={Instalación del entorno de trabajo.}]
+pip install numpy pandas scikit-learn matplotlib tensorflow kagglehub
+\end{lstlisting}
+
+Para el ejercicio 3, \texttt{kagglehub} permite descargar recursos de Kaggle desde Python mediante \texttt{dataset\_download}. En un entorno de Kaggle normalmente no se requiere una autenticación adicional para datasets públicos; fuera de Kaggle puede ser necesario autenticar la cuenta cuando el recurso requiera consentimiento o sea privado. \cite{kagglehub}
+
+\section{Ejercicio 1: compuertas NAND y XOR con dos capas ocultas}
+
+\subsection{Objetivo}
+
+Se desarrollaron dos redes neuronales independientes, ambas con dos capas ocultas, con el propósito de aprender las funciones lógicas NAND y XOR a partir de sus respectivas tablas de verdad. La arquitectura escogida fue
+\[
+2\;\text{entradas}\;\longrightarrow\;4\;\text{neuronas}\;\longrightarrow\;4\;\text{neuronas}\;\longrightarrow\;1\;\text{salida}.
+\]
+
+La elección de dos capas ocultas permite cumplir literalmente la condición del ejercicio y, al mismo tiempo, mostrar por qué la XOR requiere una transformación no lineal: una sola neurona no puede separar linealmente los casos positivos de los negativos de XOR. La guía muestra precisamente que la no linealidad de la red proviene de la función de activación y que una red multicapa puede construir representaciones intermedias. \cite{martinez2026}
+
+\subsection{Datos de entrenamiento}
+
+Las entradas son los cuatro posibles pares de bits. Para NAND y XOR se tienen los siguientes rótulos:
+
+\begin{table}[H]
+\centering
+\caption{Tablas de verdad utilizadas en el entrenamiento.}
+\begin{tabular}{cc|cc}
+\toprule
+$X_1$ & $X_2$ & $Y_{\mathrm{NAND}}$ & $Y_{\mathrm{XOR}}$ \\
+\midrule
+0 & 0 & 1 & 0 \\
+0 & 1 & 1 & 1 \\
+1 & 0 & 1 & 1 \\
+1 & 1 & 0 & 0 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Cada fila representa un par $(X,Y_r)$ del aprendizaje supervisado. La red recibe los dos valores de entrada y debe ajustar sus pesos para disminuir la diferencia entre la salida estimada y el rótulo. La guía describe este mecanismo mediante la propagación, la función de pérdida y la actualización iterativa de los pesos. \cite{martinez2026}
+
+\subsection{Propagación hacia adelante}
+
+Se usó la función sigmoidal
+\[
+\sigma(z)=\frac{1}{1+e^{-z}},
+\]
+cuya derivada puede escribirse como
+\[
+\sigma'(z)=\sigma(z)\left(1-\sigma(z)\right).
+\]
+
+Con la convención $A^{(0)}=X$, cada capa realiza
+\[
+Z^{(1)}=A^{(0)}W^{(1)}+B^{(1)},
+\qquad
+A^{(1)}=\sigma\left(Z^{(1)}\right),
+\]
+\[
+Z^{(2)}=A^{(1)}W^{(2)}+B^{(2)},
+\qquad
+A^{(2)}=\sigma\left(Z^{(2)}\right),
+\]
+\[
+Z^{(3)}=A^{(2)}W^{(3)}+B^{(3)},
+\qquad
+A^{(3)}=\sigma\left(Z^{(3)}\right).
+\]
+
+La salida de la última capa es la predicción $\widehat{Y}=A^{(3)}$. Esta forma matricial es equivalente a la propagación descrita en la guía para una red feed-forward, en la cual cada capa calcula un vector $Z$, aplica la activación $g(Z)$ y transmite $A$ hacia la siguiente capa. \cite{martinez2026}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[x=1.3cm,y=0.75cm]
+  \node[circle,draw,minimum size=0.45cm] (x1) at (0,2.4) {$X_1$};
+  \node[circle,draw,minimum size=0.45cm] (x2) at (0,1.1) {$X_2$};
+  \foreach \i/\y in {1/3.2,2/2.25,3/1.3,4/0.35}
+    \node[circle,draw,minimum size=0.42cm] (a1-\i) at (1.6,\y) {$a$};
+  \foreach \i/\y in {1/3.2,2/2.25,3/1.3,4/0.35}
+    \node[circle,draw,minimum size=0.42cm] (a2-\i) at (3.2,\y) {$a$};
+  \node[circle,draw,minimum size=0.48cm] (out) at (4.8,1.8) {$\hat Y$};
+  \foreach \x in {x1,x2}
+    \foreach \h in {a1-1,a1-2,a1-3,a1-4} {\draw[gray!65] (\x)--(\h);}
+  \foreach \hone in {a1-1,a1-2,a1-3,a1-4}
+    \foreach \htwo in {a2-1,a2-2,a2-3,a2-4} {\draw[gray!65] (\hone)--(\htwo);}
+  \foreach \h in {a2-1,a2-2,a2-3,a2-4} {\draw[gray!65] (\h)--(out);}
+  \node at (0,3.85) {Entrada};
+  \node at (1.6,3.85) {Oculta 1};
+  \node at (3.2,3.85) {Oculta 2};
+  \node at (4.8,3.85) {Salida};
+\end{tikzpicture}
+\caption{Topología de las redes del ejercicio 1. Ambas compuertas utilizan dos capas ocultas.}
+\end{figure}
+
+\subsection{Función de pérdida y retropropagación}
+
+Para facilitar la derivación y mantener la coherencia con la función de costo cuadrática presentada en la guía, se usó el error cuadrático medio con el factor $1/2$:
+\[
+J=\frac{1}{2m}\sum_{i=1}^{m}\left(\widehat{y}_i-y_i\right)^2.
+\]
+
+En la retropropagación se calcula primero el error local de la capa de salida y, posteriormente, se propaga hacia las capas ocultas. Si $\delta^{(l)}$ representa el error local de la capa $l$, para la capa de salida se empleó
+\[
+\delta^{(3)}=\left(A^{(3)}-Y\right)\odot \sigma'\left(Z^{(3)}\right),
+\]
+y para una capa oculta
+\[
+\delta^{(l)}=\left(\delta^{(l+1)}(W^{(l+1)})^T\right)\odot\sigma'\left(Z^{(l)}\right).
+\]
+
+Las actualizaciones se realizaron mediante descenso de gradiente:
+\[
+W^{(l)}\leftarrow W^{(l)}-\eta\frac{\partial J}{\partial W^{(l)}},
+\qquad
+B^{(l)}\leftarrow B^{(l)}-\eta\frac{\partial J}{\partial B^{(l)}}.
+\]
+La tasa $\eta$ controla qué fracción de la corrección calculada se aplica en cada iteración. La guía presenta el mismo principio al describir la tasa de aprendizaje como un hiperparámetro del entrenamiento. \cite{martinez2026}
+
+\subsection{Implementación en Python}
+
+El programa se escribió únicamente con NumPy para que la mecánica de la red quede visible: inicialización de pesos, propagación, cálculo de la pérdida, retropropagación y predicción. Se mantuvo la nomenclatura $Z^{(l)}$, $A^{(l)}$ y $W^{(l)}$ usada en la guía.
+
+\begin{lstlisting}[style=pgpython,caption={Implementación desde cero de una red con dos capas ocultas.}]
+import numpy as np
+
+
+def sigmoid(z):
+    z = np.clip(z, -60, 60)
+    return 1.0 / (1.0 + np.exp(-z))
+
+
+def sigmoid_derivative(a):
+    return a * (1.0 - a)
+
+
+def inicializar_red(n_entradas, n1=4, n2=4, seed=1):
+    rng = np.random.default_rng(seed)
+    W1 = rng.normal(0.0, 0.7, (n_entradas, n1))
+    B1 = np.zeros((1, n1))
+    W2 = rng.normal(0.0, 0.7, (n1, n2))
+    B2 = np.zeros((1, n2))
+    W3 = rng.normal(0.0, 0.7, (n2, 1))
+    B3 = np.zeros((1, 1))
+    return [W1, W2, W3], [B1, B2, B3]
+
+
+def propaga(X, W, B):
+    Z1 = X @ W[0] + B[0]
+    A1 = sigmoid(Z1)
+    Z2 = A1 @ W[1] + B[1]
+    A2 = sigmoid(Z2)
+    Z3 = A2 @ W[2] + B[2]
+    A3 = sigmoid(Z3)
+    return Z1, A1, Z2, A2, Z3, A3
+
+
+def retropropaga(X, Y, W, B, cache):
+    Z1, A1, Z2, A2, Z3, A3 = cache
+    m = len(X)
+
+    dZ3 = (A3 - Y) * sigmoid_derivative(A3)
+    dW3 = (A2.T @ dZ3) / m
+    dB3 = np.mean(dZ3, axis=0, keepdims=True)
+
+    dZ2 = (dZ3 @ W[2].T) * sigmoid_derivative(A2)
+    dW2 = (A1.T @ dZ2) / m
+    dB2 = np.mean(dZ2, axis=0, keepdims=True)
+
+    dZ1 = (dZ2 @ W[1].T) * sigmoid_derivative(A1)
+    dW1 = (X.T @ dZ1) / m
+    dB1 = np.mean(dZ1, axis=0, keepdims=True)
+
+    return [dW1, dW2, dW3], [dB1, dB2, dB3]
+
+
+def entrenar(X, Y, epochs=50000, lr=2.0, seed=1):
+    W, B = inicializar_red(X.shape[1], seed=seed)
+    historia = []
+
+    for epoch in range(epochs):
+        cache = propaga(X, W, B)
+        pred = cache[-1]
+        loss = np.mean((pred - Y) ** 2) / 2.0
+
+        dW, dB = retropropaga(X, Y, W, B, cache)
+        for k in range(3):
+            W[k] -= lr * dW[k]
+            B[k] -= lr * dB[k]
+
+        if epoch % 5000 == 0 or epoch == epochs - 1:
+            historia.append((epoch + 1, loss))
+
+    return W, B, historia
+
+
+def predecir(X, W, B):
+    return propaga(X, W, B)[-1]
+
+
+X = np.array([
+    [0, 0],
+    [0, 1],
+    [1, 0],
+    [1, 1]
+], dtype=float)
+
+Y_nand = np.array([[1], [1], [1], [0]], dtype=float)
+Y_xor  = np.array([[0], [1], [1], [0]], dtype=float)
+
+for nombre, Y, seed in [
+    ("NAND", Y_nand, 11),
+    ("XOR",  Y_xor,  12)
+]:
+    W, B, historia = entrenar(X, Y, seed=seed)
+    pred = predecir(X, W, B)
+    clases = (pred >= 0.5).astype(int)
+
+    print(f"\n{nombre}:")
+    print("salidas =", np.round(pred.ravel(), 6))
+    print("clases  =", clases.ravel())
+    print("aciertos =", np.sum(clases.ravel() == Y.ravel()), "/ 4")
+    print("perdida final =", historia[-1][1])
+\end{lstlisting}
+
+En el fragmento anterior, la función \texttt{propaga} produce los vectores intermedios $Z^1,A^1,Z^2,A^2,Z^3,A^3$. La función \texttt{retropropaga} calcula los gradientes capa por capa, empezando en la salida y regresando hasta la entrada. Finalmente, \texttt{entrenar} repite este proceso 50\,000 veces. Esta implementación sigue el esquema conceptual de backpropagation presentado en la guía. \cite{martinez2026}
+
+\subsection{Resultados}
+
+Con las semillas indicadas en el programa se obtuvo la siguiente salida. El resultado se expresa tanto como valor continuo de la sigmoide como clasificación binaria mediante un umbral de 0.5.
+
+\begin{lstlisting}[style=pgterminal,caption={Resultados obtenidos para NAND y XOR.}]
+NAND:
+salidas = [0.999605 0.997284 0.997153 0.003449]
+clases  = [1 1 1 0]
+aciertos = 4 / 4
+perdida final = 3.852137858160564e-06
+
+XOR:
+salidas = [0.004928 0.996014 0.995419 0.004175]
+clases  = [0 1 1 0]
+aciertos = 4 / 4
+perdida final = 1.1174699120999226e-05
+\end{lstlisting}
+
+Los dos modelos clasificaron correctamente los cuatro casos de sus respectivas tablas de verdad. En NAND, las tres combinaciones con al menos una entrada igual a cero quedaron próximas a uno, mientras que la combinación $(1,1)$ quedó próxima a cero. En XOR, las combinaciones con entradas diferentes quedaron próximas a uno y las combinaciones iguales próximas a cero.
+
+El experimento es especialmente significativo en XOR: el aprendizaje no consiste en memorizar cuatro respuestas mediante una única transformación lineal, sino en construir una transformación no lineal mediante las dos capas ocultas. Por tanto, el resultado ilustra en un problema mínimo la función de las capas intermedias y de la activación sigmoidal. La guía destaca precisamente que la función de activación es la que introduce la complejidad necesaria para que una red deje de ser únicamente una combinación lineal. \cite{martinez2026}
+
+\section{Ejercicio 2: clasificación de prendas con Fashion-MNIST y TensorFlow}
+
+\subsection{Descripción del dataset}
+
+Fashion-MNIST contiene 60\,000 imágenes de entrenamiento y 10\,000 imágenes de prueba. Cada imagen tiene resolución $28\times28$ en escala de grises, por lo que puede verse como una matriz de 784 píxeles. Existen 10 clases: camiseta/top, pantalón, jersey, vestido, abrigo, sandalia, camisa, zapatilla deportiva, bolso y bota de tobillo. \cite{tensorflowfashion,tensorflowapi}
+
+\begin{table}[H]
+\centering
+\caption{Rótulos de Fashion-MNIST.}
+\begin{tabular}{cl}
+\toprule
+Rótulo & Clase \\
+\midrule
+0 & T-shirt/top \\
+1 & Trouser \\
+2 & Pullover \\
+3 & Dress \\
+4 & Coat \\
+5 & Sandal \\
+6 & Shirt \\
+7 & Sneaker \\
+8 & Bag \\
+9 & Ankle boot \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+La documentación de TensorFlow señala que \texttt{load\_data()} devuelve cuatro arreglos de NumPy: imágenes y rótulos de entrenamiento, e imágenes y rótulos de prueba. Los píxeles llegan en el rango 0--255 y se normalizan dividiendo entre 255 para llevarlos al intervalo 0--1. \cite{tensorflowapi,tensorflowfashion}
+
+\subsection{Preprocesamiento}
+
+El preprocesamiento tiene dos objetivos. Primero, conservar la misma representación para entrenamiento y prueba. Segundo, evitar que la magnitud de los píxeles domine innecesariamente las actualizaciones del optimizador. La transformación usada es
+\[
+x_{\mathrm{normalizado}}=\frac{x}{255}.
+\]
+
+\subsection{Arquitectura utilizada}
+
+Se empleó una red neuronal densa sencilla, siguiendo el ejemplo básico de clasificación de TensorFlow:
+\begin{itemize}[leftmargin=1.2cm]
+    \item \texttt{Flatten}: convierte $28\times28$ píxeles en un vector de 784 entradas.
+    \item \texttt{Dense(128, relu)}: transforma las 784 entradas en una representación aprendida de 128 neuronas.
+    \item \texttt{Dense(10, softmax)}: produce diez valores que pueden interpretarse como scores normalizados para las diez clases.
+\end{itemize}
+
+TensorFlow documenta esta misma idea con una capa \texttt{Flatten} seguida por una capa densa de 128 neuronas y una salida de 10 clases. \cite{tensorflowfashion}
+
+\subsection{Código completo}
+
+\begin{lstlisting}[style=pgpython,caption={Clasificación básica de Fashion-MNIST con TensorFlow.}]
+import numpy as np
+import matplotlib.pyplot as plt
+import tensorflow as tf
+from tensorflow import keras
+
+print("TensorFlow:", tf.__version__)
+
+# 1. Cargar Fashion-MNIST
+fashion_mnist = keras.datasets.fashion_mnist
+(train_images, train_labels), (test_images, test_labels) = fashion_mnist.load_data()
+
+class_names = [
+    'T-shirt/top', 'Trouser', 'Pullover', 'Dress', 'Coat',
+    'Sandal', 'Shirt', 'Sneaker', 'Bag', 'Ankle boot'
+]
+
+# 2. Normalizar los pixeles
+train_images = train_images.astype('float32') / 255.0
+test_images = test_images.astype('float32') / 255.0
+
+# 3. Definir la red
+model = keras.Sequential([
+    keras.layers.Input(shape=(28, 28)),
+    keras.layers.Flatten(),
+    keras.layers.Dense(128, activation='relu'),
+    keras.layers.Dense(10, activation='softmax')
+])
+
+# 4. Compilar
+model.compile(
+    optimizer='adam',
+    loss='sparse_categorical_crossentropy',
+    metrics=['accuracy']
+)
+
+# 5. Entrenar
+history = model.fit(
+    train_images,
+    train_labels,
+    epochs=10,
+    batch_size=32,
+    verbose=2
+)
+
+# 6. Evaluar
+loss, accuracy = model.evaluate(test_images, test_labels, verbose=2)
+print("Perdida de prueba:", loss)
+print("Exactitud de prueba:", accuracy)
+
+# 7. Predecir algunas imagenes
+predictions = model.predict(test_images, verbose=0)
+
+for i in [0, 12, 25]:
+    clase = int(np.argmax(predictions[i]))
+    confianza = float(np.max(predictions[i]))
+    print(
+        i,
+        "real =", class_names[test_labels[i]],
+        "predicha =", class_names[clase],
+        "score =", round(confianza, 4)
+    )
+
+# 8. Visualizacion opcional
+plt.figure(figsize=(9, 3))
+for j, i in enumerate([0, 12, 25]):
+    plt.subplot(1, 3, j + 1)
+    plt.imshow(test_images[i], cmap='gray')
+    plt.title(class_names[np.argmax(predictions[i])])
+    plt.axis('off')
+plt.tight_layout()
+plt.show()
+\end{lstlisting}
+
+\subsection{Explicación de las principales funciones e instrucciones}
+
+\begin{table}[H]
+\centering
+\caption{Funciones principales empleadas en el ejercicio 2.}
+\small
+\begin{tabularx}{\textwidth}{>{\ttfamily}l X}
+\toprule
+\textnormal{Instrucción} & \textnormal{Función en el programa} \\
+\midrule
+keras.datasets.fashion\_mnist & Accede al dataset Fashion-MNIST desde la API de Keras. \\
+load\_data() & Descarga o recupera del caché los cuatro arreglos de NumPy. \\
+astype('float32') & Cambia el tipo numérico para trabajar con valores de red neuronal. \\
+/255.0 & Normaliza los píxeles de 0--255 a 0--1. \\
+Sequential & Construye el modelo como una secuencia ordenada de capas. \\
+Input(shape=(28,28)) & Define el tamaño de la entrada sin aprender parámetros. \\
+Flatten & Aplana la imagen y produce 784 entradas. \\
+Dense(128, relu) & Aprende una representación no lineal intermedia. \\
+Dense(10, softmax) & Produce el score final para cada una de las 10 clases. \\
+compile() & Define optimizador, función de pérdida y métricas. \\
+fit() & Ejecuta el entrenamiento con los ejemplos rotulados. \\
+evaluate() & Calcula pérdida y exactitud sobre datos no utilizados para ajustar los pesos. \\
+predict() & Calcula las salidas de la red para nuevas entradas. \\
+argmax() & Selecciona el índice de mayor score como clase predicha. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+La documentación de TensorFlow explica que \texttt{Flatten} únicamente cambia la representación de la imagen y no contiene parámetros aprendibles, mientras que las capas \texttt{Dense} sí aprenden sus pesos. También define \texttt{compile} como el punto en el que se especifican optimizador, pérdida y métricas, y \texttt{fit} como el método de ajuste del modelo a los datos de entrenamiento. \cite{tensorflowfashion}
+
+La función de pérdida \texttt{sparse\_categorical\_crossentropy} es apropiada aquí porque cada imagen posee un único rótulo entero entre 0 y 9. La métrica \texttt{accuracy} representa la fracción de imágenes clasificadas correctamente.
+
+\subsection{Resultados y análisis}
+
+La guía oficial de TensorFlow reporta, para el modelo básico equivalente, una evaluación de prueba de
+\[
+\text{loss}=0.3350,
+\qquad
+\text{accuracy}=0.8840,
+\]
+es decir, aproximadamente $88.4\%$ de exactitud sobre las 10\,000 imágenes de prueba. En el mismo ejemplo, la primera imagen es identificada correctamente como \emph{Ankle boot}, con el mayor score alrededor de 0.93. \cite{tensorflowfashion}
+
+Estos valores deben interpretarse como resultados de referencia y no como una cifra universal: los tiempos, scores por imagen y métricas finales pueden variar con la versión de TensorFlow, la inicialización aleatoria, el hardware y parámetros como el tamaño del lote. Lo importante es que el flujo completo coincide con el planteamiento de aprendizaje supervisado de la guía: imagen $\rightarrow$ rótulo, entrenamiento sobre pares $(X,Y_r)$ y evaluación sobre ejemplos no utilizados para ajustar los pesos. \cite{martinez2026,tensorflowfashion}
+
+La principal dificultad de Fashion-MNIST frente a NAND/XOR es la escala del problema. En lugar de cuatro patrones y dos entradas, la red recibe decenas de miles de imágenes y 784 características por imagen. Aun así, la misma idea permanece: los pesos transforman las características y la función de activación introduce la no linealidad.
+
+\section{Ejercicio 3: dataset de Kaggle, análisis de features, rótulo y ejemplos externos}
+
+\subsection{Selección del dataset}
+
+Se seleccionó el dataset \textbf{Iris Species} de Kaggle porque es pequeño, interpretable y permite ver claramente la relación entre \emph{features} y rótulo. La ficha de Kaggle indica tres especies con 50 observaciones cada una y las columnas \texttt{Id}, \texttt{SepalLengthCm}, \texttt{SepalWidthCm}, \texttt{PetalLengthCm}, \texttt{PetalWidthCm} y \texttt{Species}. Además, la ficha advierte que una especie es linealmente separable de las otras dos, mientras que las otras dos presentan mayor solapamiento. \cite{kaggleiris}
+
+\subsection{Features y rótulo}
+
+En este problema las cuatro medidas morfológicas son las características de entrada:
+\[
+X=\begin{bmatrix}
+\text{longitud del sépalo} &
+\text{ancho del sépalo} &
+\text{longitud del pétalo} &
+\text{ancho del pétalo}
+\end{bmatrix}.
+\]
+
+El rótulo es la especie del iris:
+\[
+Y\in\{\text{Iris-setosa},\text{Iris-versicolor},\text{Iris-virginica}\}.
+\]
+
+El atributo \texttt{Id} no se usa como feature porque solo identifica la fila y no describe físicamente la flor. Esta eliminación es importante: si se utilizara como entrada, el modelo podría aprender una relación artificial con el orden de las observaciones.
+
+La estructura del dataset coincide con la descripción de la fuente clásica de Fisher: 150 observaciones, cuatro variables predictoras y tres clases de 50 observaciones. \cite{kaggleiris,irisexternal}
+
+\subsection{Descarga mediante la librería de Kaggle para Python}
+
+El código utiliza la función \texttt{dataset\_download} de \texttt{kagglehub}, que es la interfaz recomendada por Kaggle para descargar datasets desde Python. La librería también permite especificar una versión concreta o un directorio de salida. \cite{kagglehub}
+
+\begin{lstlisting}[style=pgpython,caption={Descarga y exploración del dataset Iris desde Kaggle.}]
+from pathlib import Path
+import kagglehub
+import pandas as pd
+
+# Descargar el dataset desde Kaggle
+ruta_dataset = kagglehub.dataset_download("uciml/iris")
+print("Dataset descargado en:", ruta_dataset)
+
+# Buscar el archivo CSV dentro del directorio descargado
+rutas_csv = list(Path(ruta_dataset).rglob("Iris.csv"))
+if not rutas_csv:
+    raise FileNotFoundError("No se encontro Iris.csv en el dataset descargado.")
+
+ruta_csv = rutas_csv[0]
+df = pd.read_csv(ruta_csv)
+
+print("\nPrimeras filas:")
+print(df.head())
+
+print("\nDimensiones:", df.shape)
+print("\nValores faltantes:")
+print(df.isna().sum())
+
+print("\nRótulos:")
+print(df["Species"].value_counts())
+
+print("\nEstadisticas de los features:")
+print(df.describe())
+\end{lstlisting}
+
+\subsection{Construcción y entrenamiento del modelo}
+
+Se utilizó una red neuronal multicapa \texttt{MLPClassifier} de scikit-learn. Antes de la red se incluyó \texttt{StandardScaler}, pues las cuatro medidas están en centímetros y presentan escalas distintas. La arquitectura tiene dos capas ocultas de ocho neuronas cada una, activación ReLU y una salida de tres clases.
+
+La división 70/30 se hace de manera estratificada para conservar aproximadamente la misma proporción de las tres especies en entrenamiento y prueba. La precisión se complementa con la matriz de confusión y el reporte por clase.
+
+\begin{lstlisting}[style=pgpython,caption={Preprocesamiento, entrenamiento y evaluación del clasificador neuronal.}]
+import numpy as np
+from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
+from sklearn.model_selection import train_test_split
+from sklearn.neural_network import MLPClassifier
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import StandardScaler
+
+features = [
+    "SepalLengthCm",
+    "SepalWidthCm",
+    "PetalLengthCm",
+    "PetalWidthCm"
+]
+
+X = df[features].to_numpy(dtype=float)
+clases = sorted(df["Species"].unique())
+mapa = {nombre: i for i, nombre in enumerate(clases)}
+y = df["Species"].map(mapa).to_numpy()
+
+X_train, X_test, y_train, y_test = train_test_split(
+    X,
+    y,
+    test_size=0.30,
+    stratify=y,
+    random_state=42
+)
+
+modelo = Pipeline([
+    ("escalado", StandardScaler()),
+    ("red", MLPClassifier(
+        hidden_layer_sizes=(8, 8),
+        activation="relu",
+        solver="lbfgs",
+        alpha=1e-4,
+        max_iter=2000,
+        random_state=42
+    ))
+])
+
+modelo.fit(X_train, y_train)
+
+pred = modelo.predict(X_test)
+
+print("Exactitud:", accuracy_score(y_test, pred))
+print("\nMatriz de confusion:")
+print(confusion_matrix(y_test, pred))
+
+print("\nReporte:")
+print(classification_report(
+    y_test,
+    pred,
+    target_names=clases,
+    digits=4
+))
+\end{lstlisting}
+
+\subsection{Resultados obtenidos}
+
+Sobre la versión canónica del dataset se obtuvo la matriz de confusión
+\[
+\begin{array}{c|ccc}
+ & \widehat{y}=\text{setosa} & \widehat{y}=\text{versicolor} & \widehat{y}=\text{virginica}\\
+\hline
+y=\text{setosa} & 15 & 0 & 0\\
+y=\text{versicolor} & 0 & 15 & 0\\
+y=\text{virginica} & 0 & 3 & 12
+\end{array}
+\]
+y una exactitud de
+\[
+\text{accuracy}=\frac{15+15+12}{45}=0.9333.
+\]
+
+El reporte por clase fue:
+
+\begin{table}[H]
+\centering
+\caption{Desempeño del modelo neuronal sobre el conjunto de prueba.}
+\begin{tabular}{lccc}
+\toprule
+Clase & Precisión & Sensibilidad & F1 \\
+\midrule
+Iris-setosa & 1.0000 & 1.0000 & 1.0000 \\
+Iris-versicolor & 0.8333 & 1.0000 & 0.9091 \\
+Iris-virginica & 1.0000 & 0.8000 & 0.8889 \\
+\midrule
+Promedio macro & 0.9444 & 0.9333 & 0.9327 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+La matriz muestra que la especie \emph{setosa} fue separada sin errores. Los tres errores corresponden a flores de \emph{virginica} clasificadas como \emph{versicolor}. Este comportamiento coincide con la descripción general del dataset: una de las clases es más separable, mientras que el límite entre las otras dos es más difícil. \cite{kaggleiris,irisexternal}
+
+\subsection{Ejemplos encontrados en Internet}
+
+Para cumplir la segunda parte del enunciado, se tomaron medidas publicadas en fuentes accesibles por Internet. Una tabla de referencia de medidas de tres tipos de iris incluye ejemplos como $(5.1,3.5,1.4,0.2)$ para \emph{Iris setosa} y $(7.0,3.2,4.7,1.4)$ para \emph{Iris versicolor}. \cite{wileyiris} Además, un demostrador de clasificación independiente publica el ejemplo $(6.9,3.2,5.7,2.3)$ con clase suministrada \emph{Iris virginica}. \cite{neuraldesigneriris}
+
+El siguiente fragmento usa exactamente esas cuatro mediciones como entradas nuevas para el modelo:
+
+\begin{lstlisting}[style=pgpython,caption={Predicción de ejemplos de medidas publicados en Internet.}]
+ejemplos_internet = np.array([
+    [5.1, 3.5, 1.4, 0.2],  # setosa
+    [7.0, 3.2, 4.7, 1.4],  # versicolor
+    [6.9, 3.2, 5.7, 2.3],  # virginica
+    [5.9, 3.0, 5.1, 1.8]   # ejemplo adicional
+])
+
+pred_internet = modelo.predict(ejemplos_internet)
+score_internet = modelo.predict_proba(ejemplos_internet)
+
+for x, p, scores in zip(ejemplos_internet, pred_internet, score_internet):
+    print("Medidas:", x)
+    print("Prediccion:", clases[p])
+    print("Score maximo:", round(float(np.max(scores)), 6))
+    print()
+\end{lstlisting}
+
+Para la arquitectura y semilla indicadas se obtuvo:
+
+\begin{table}[H]
+\centering
+\caption{Predicción de ejemplos externos.}
+\begin{tabularx}{\textwidth}{c c c X}
+\toprule
+Ejemplo & Medidas $(cm)$ & Predicción & Análisis \\
+\midrule
+1 & $(5.1,3.5,1.4,0.2)$ & setosa & El modelo identifica correctamente una flor con pétalos muy cortos y estrechos. \\
+2 & $(7.0,3.2,4.7,1.4)$ & versicolor & Se clasifica como versicolor, aunque esta región presenta mayor solapamiento con virginica. \\
+3 & $(6.9,3.2,5.7,2.3)$ & virginica & La predicción coincide con la clase publicada en el ejemplo externo. \\
+4 & $(5.9,3.0,5.1,1.8)$ & virginica & La longitud y el ancho del pétalo favorecen claramente la clase virginica. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Estos ejemplos sirven para demostrar el uso del modelo sobre entradas fuera de la secuencia de evaluación mostrada en la matriz de confusión, pero no deben confundirse con un conjunto externo totalmente independiente. El dataset Iris es un conjunto clásico que circula en numerosas fuentes en línea, por lo que algunos ejemplos publicados pueden pertenecer a la misma población de datos. La conclusión correcta es, por tanto, que el modelo produce predicciones coherentes con ejemplos conocidos, no que estas pocas observaciones demuestren generalización a una población botánica real.
+
+\subsection{Interpretación de los features}
+
+Los resultados también permiten identificar una relación importante entre las variables. Las longitudes y anchos de los pétalos son especialmente informativos para separar las especies, mientras que las medidas del sépalo presentan mayor solapamiento. La descripción estadística del conjunto clásico muestra, además, una asociación mucho mayor entre la clase y las variables del pétalo que con el ancho del sépalo. \cite{irisexternal}
+
+Por esta razón, la etapa de selección de features no consistió simplemente en introducir todas las columnas disponibles, sino en excluir la columna \texttt{Id}, conservar las cuatro medidas físicas y escalar sus valores antes del entrenamiento.
+
+\subsection{Nota de reproducibilidad}
+
+La descarga de KaggleHub no pudo ejecutarse en el entorno utilizado para generar este archivo porque no se dispone de conectividad de red desde el proceso de ejecución. El código final sí contiene la llamada real a la función de descarga de KaggleHub. Las métricas numéricas reportadas arriba se obtuvieron al validar exactamente la misma arquitectura y partición sobre la versión canónica del conjunto Iris disponible localmente en scikit-learn; la ficha de Kaggle confirma la misma estructura clásica de tres clases y cuatro variables predictoras. \cite{kaggleiris}
+
+\section{Ejercicio 4: punto libre - comparación con una red convolucional}
+
+\subsection{Motivación}
+
+Como punto libre se desarrolló una extensión del ejercicio de Fashion-MNIST utilizando una red neuronal convolucional (CNN). La elección se relaciona directamente con la parte final de la guía, en la que se presentan los detectores locales, la convolución y el \emph{max pooling} como herramientas para computación visual. \cite{martinez2026}
+
+La diferencia principal frente al ejercicio 2 es que una CNN no aplana inmediatamente la imagen. Primero aplica filtros espaciales que recorren regiones locales y después reduce progresivamente la resolución mediante pooling. De esta forma, la red puede aprender patrones locales antes de construir una decisión de clasificación.
+
+\subsection{Arquitectura propuesta}
+
+Se propone la secuencia
+\[
+\text{Imagen}
+\rightarrow \text{Conv2D}
+\rightarrow \text{MaxPooling2D}
+\rightarrow \text{Conv2D}
+\rightarrow \text{MaxPooling2D}
+\rightarrow \text{Flatten}
+\rightarrow \text{Dense}
+\rightarrow \text{Softmax}.
+\]
+
+La capa \texttt{Conv2D} aprende filtros espaciales; \texttt{MaxPooling2D} conserva los valores máximos de pequeñas regiones y reduce el tamaño espacial; finalmente, las capas densas combinan las características extraídas para producir la clasificación.
+
+\subsection{Código}
+
+\begin{lstlisting}[style=pgpython,caption={Punto libre: CNN sencilla para Fashion-MNIST.}]
+import numpy as np
+import tensorflow as tf
+from tensorflow import keras
+
+# 1. Cargar datos
+(train_images, train_labels), (test_images, test_labels) = keras.datasets.fashion_mnist.load_data()
+
+train_images = train_images.astype('float32') / 255.0
+test_images = test_images.astype('float32') / 255.0
+
+# Agregar el canal de escala de grises
+train_images = train_images[..., np.newaxis]
+test_images = test_images[..., np.newaxis]
+
+# 2. Definir la CNN
+cnn = keras.Sequential([
+    keras.layers.Input(shape=(28, 28, 1)),
+    keras.layers.Conv2D(32, (3, 3), activation='relu', padding='same'),
+    keras.layers.MaxPooling2D((2, 2)),
+    keras.layers.Conv2D(64, (3, 3), activation='relu', padding='same'),
+    keras.layers.MaxPooling2D((2, 2)),
+    keras.layers.Flatten(),
+    keras.layers.Dense(64, activation='relu'),
+    keras.layers.Dense(10, activation='softmax')
+])
+
+# 3. Compilar
+cnn.compile(
+    optimizer='adam',
+    loss='sparse_categorical_crossentropy',
+    metrics=['accuracy']
+)
+
+# 4. Entrenar y reservar validacion
+history_cnn = cnn.fit(
+    train_images,
+    train_labels,
+    epochs=10,
+    batch_size=64,
+    validation_split=0.1,
+    verbose=2
+)
+
+# 5. Evaluar
+loss, accuracy = cnn.evaluate(test_images, test_labels, verbose=2)
+print("Perdida CNN:", loss)
+print("Exactitud CNN:", accuracy)
+\end{lstlisting}
+
+\subsection{Análisis}
+
+La comparación conceptual entre los ejercicios 2 y 4 es directa. La red densa del ejercicio 2 recibe los 784 píxeles como una lista; la CNN conserva inicialmente la geometría de la imagen y aprende filtros locales. TensorFlow ha documentado CNN sencillas para Fashion-MNIST con más de 90\% de exactitud sin una optimización exhaustiva, lo cual sirve como referencia de que la estructura convolucional es adecuada para el problema visual. \cite{tensorflowcnnblog}
+
+No se fija en este documento una cifra única de exactitud para esta CNN, porque el código está pensado para que el estudiante lo ejecute en su entorno y registre su propia corrida. La salida debe conservar, al menos, la exactitud de entrenamiento, la exactitud de validación y la exactitud final de prueba. Así se puede observar si aparece una brecha entre entrenamiento y prueba, lo cual es una señal de posible sobreentrenamiento. La propia guía de redes neuronales advierte sobre la diferencia entre subentrenamiento y sobreentrenamiento y propone separar los datos para evaluar la generalización. \cite{martinez2026}
+
+\subsection{Qué aporta el punto libre}
+
+Este punto permite conectar los conceptos iniciales de la guía con la visión computacional. En el ejercicio 2, \texttt{Flatten} elimina la estructura bidimensional antes de la primera transformación aprendida. En el ejercicio 4, las capas convolucionales y el pooling extraen una representación espacial antes de la etapa densa. La comparación muestra por qué las CNN son especialmente útiles cuando las características relevantes dependen de patrones locales dentro de una imagen. \cite{martinez2026,tensorflowcnnblog}
+
+\section{Conclusiones generales}
+
+\begin{enumerate}[leftmargin=1.2cm]
+    \item Las dos redes del ejercicio 1 aprendieron correctamente NAND y XOR usando dos capas ocultas. El caso XOR evidencia la utilidad de la no linealidad: la red necesita transformar las entradas mediante capas intermedias antes de poder separar los patrones.
+    \item Fashion-MNIST muestra el cambio de escala entre un problema lógico y un problema de visión. El mismo esquema de aprendizaje supervisado se conserva, pero ahora cada ejemplo tiene 784 características y existen diez clases. El modelo denso básico documentado por TensorFlow alcanza una exactitud de referencia del 88.4\% sobre prueba. \cite{tensorflowfashion}
+    \item El ejercicio 3 muestra la importancia de estudiar los features antes de entrenar. La columna \texttt{Id} no representa una propiedad de la flor y por tanto se excluye; las cuatro medidas físicas sí se utilizan. La red neuronal obtuvo 93.33\% de exactitud en la partición evaluada y mostró que los errores se concentran entre versicolor y virginica.
+    \item Los ejemplos de Internet permiten verificar que un modelo entrenado puede recibir mediciones nuevas y entregar una clase, pero no constituyen por sí mismos una validación independiente de toda la población. Esta distinción es importante para evitar sobreinterpretar resultados de datasets pequeños y clásicos.
+    \item El punto libre con CNN conecta el trabajo con los conceptos de convolución y pooling de la guía. La principal diferencia no es solamente agregar capas, sino conservar y explotar la estructura espacial de la imagen antes de la clasificación final. \cite{martinez2026}
+\end{enumerate}
+
+En conjunto, los cuatro ejercicios permiten recorrer el flujo completo presentado en la guía: definir características y rótulos, realizar propagación, seleccionar una arquitectura, calcular una función de pérdida, ajustar pesos mediante aprendizaje, evaluar la generalización y finalmente utilizar el modelo para predecir nuevos ejemplos. El valor pedagógico del conjunto está en que la misma idea de red neuronal aparece en problemas de complejidad creciente: lógica booleana, imágenes de baja resolución, datos tabulares y visión convolucional.
+
+\section{Referencias}
+
+\begin{thebibliography}{99}
+
+\bibitem{martinez2026}
+Martínez P., J. J. (2026). \textit{Introducción a las redes neuronales artificiales}. Universidad Nacional de Colombia, material de clase, septiembre de 2026.
+
+\bibitem{tensorflowfashion}
+TensorFlow. (2026). \textit{Basic classification: Classify images of clothing}. TensorFlow Core.\\
+\url{https://www.tensorflow.org/tutorials/keras/classification}
+
+\bibitem{tensorflowapi}
+TensorFlow. (2026). \textit{tf.keras.datasets.fashion\_mnist.load\_data}. TensorFlow API documentation.\\
+\url{https://www.tensorflow.org/api_docs/python/tf/keras/datasets/fashion_mnist/load_data}
+
+\bibitem{kagglehub}
+Kaggle. (2026). \textit{kagglehub: Python library to access Kaggle resources}. GitHub.\\
+\url{https://github.com/Kaggle/kagglehub}
+
+\bibitem{kaggleiris}
+Kaggle. (2016). \textit{Iris Species}. Kaggle Datasets.\\
+\url{https://www.kaggle.com/uciml/iris}
+
+\bibitem{irisexternal}
+University of Michigan, SOCR. (2025). \textit{SOCR Data 052511 IrisSepalPetalClasses}.\\
+\url{https://wiki.socr.umich.edu/index.php/SOCR_Data_052511_IrisSepalPetalClasses}
+
+\bibitem{wileyiris}
+Wiley. (2026). \textit{Multiva: Measurements on three types of irises}. Excerpted data table.\\
+\url{https://catalogimages.wiley.com/images/db/pdf/9781118738023.excerpt.pdf}
+
+\bibitem{neuraldesigneriris}
+Neural Designer. (2026). \textit{Classify iris flowers using machine learning}.\\
+\url{https://www.neuraldesigner.com/learning/examples/iris-flowers-classification/}
+
+\bibitem{tensorflowcnnblog}
+Maynard-Reid, M. (2018). \textit{Fashion-MNIST with tf.Keras}. TensorFlow Blog.\\
+\url{https://blog.tensorflow.org/2018/04/fashion-mnist-with-tfkeras.html}
+
+\end{thebibliography}
+
+\end{document}

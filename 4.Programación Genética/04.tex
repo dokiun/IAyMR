@@ -1,0 +1,422 @@
+\documentclass[14pt,twoside]{article}
+
+% Paquetes a utilizar
+\usepackage[utf8]{inputenc}
+\usepackage[spanish]{babel}
+\usepackage{amsmath, amssymb}
+\usepackage{graphicx}
+\usepackage{geometry}
+\usepackage{fancyhdr}
+\usepackage{hyperref}
+\usepackage{enumitem}
+\usepackage{mathrsfs}
+\usepackage{float}
+\usepackage{setspace}
+\usepackage{parskip}
+\usepackage{tikz} % Tikz
+\usepackage{lmodern}
+\usepackage{datetime2}  % ISO8601
+%\usepackage{breqn}   % Para que las ecuaciones largas se partan automáticamente
+\usepackage{bm} % Para negrita en símbolos
+\usepackage{tikz}
+\usepackage{booktabs}
+\usepackage{stmaryrd}
+\usepackage{comment}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage[hidelinks]{hyperref}
+
+\usepackage{xcolor}
+\usepackage{listings}
+
+\definecolor{pgfondo}{HTML}{F6F8FA}
+\definecolor{pgborde}{HTML}{D0D7DE}
+\definecolor{pgazul}{HTML}{0550AE}
+\definecolor{pgverde}{HTML}{116329}
+\definecolor{pggris}{HTML}{57606A}
+\definecolor{pgmorado}{HTML}{8250DF}
+
+\lstdefinestyle{pgbase}{
+    basicstyle=\ttfamily\footnotesize,
+    backgroundcolor=\color{pgfondo},
+    frame=single,
+    rulecolor=\color{pgborde},
+    framesep=6pt,
+    breaklines=true,
+    breakatwhitespace=false,
+    columns=fullflexible,
+    keepspaces=true,
+    showstringspaces=false,
+    tabsize=4,
+    captionpos=b,
+    aboveskip=1em,
+    belowskip=1em,
+    literate=
+        {á}{{\'a}}1 {é}{{\'e}}1 {í}{{\'i}}1
+        {ó}{{\'o}}1 {ú}{{\'u}}1 {ñ}{{\~n}}1
+        {Á}{{\'A}}1 {É}{{\'E}}1 {Í}{{\'I}}1
+        {Ó}{{\'O}}1 {Ú}{{\'U}}1 {Ñ}{{\~N}}1
+}
+
+\lstdefinestyle{pgpython}{
+    style=pgbase,
+    language=Python,
+    keywordstyle=\color{pgazul}\bfseries,
+    commentstyle=\color{pggris}\itshape,
+    stringstyle=\color{pgverde},
+    emph={gp,np,tools,creator},
+    emphstyle=\color{pgmorado},
+    numbers=left,
+    numberstyle=\ttfamily\scriptsize\color{pggris},
+    numbersep=10pt
+}
+
+\lstdefinestyle{pgterminal}{
+    style=pgbase,
+    numbers=none
+}
+
+% Márgenes
+\geometry{
+  top=2.5cm,
+  bottom=2.5cm,
+  left=2cm,
+  right=2cm
+}
+
+% Espaciado
+\singlespacing
+
+% Definir formato de fecha ISO 8601 (YYYY-MM-DD)
+\newcommand{\mydate}{\DTMtoday}
+
+% Definir título
+\newcommand{\documenttitle}{Programación Genética}
+
+% Materia o proyecto
+\newcommand{\materia}{Inteligencia Artificial y Mini-Robots (2023251)}
+
+% aumenta el espacio entre filas
+\renewcommand{\arraystretch}{1.5} 
+
+% Encabezado y pie de página
+\pagestyle{fancy}
+\fancyhf{}
+
+% Encabezado
+\fancyhead[RO]{\textbf{\materia}}         % derecha en páginas pares
+\fancyhead[LO]{\textit{\documenttitle}}   % izquierda en páginas pares
+
+\fancyhead[RE]{\textit{\documenttitle}}   % derecha en páginas impares
+\fancyhead[LE]{\textbf{\materia}}         % izquierda en páginas impares
+
+% Pie de página
+\fancyfoot[LE,RO]{\textit{Universidad Nacional de Colombia}}
+\fancyfoot[RE,LO]{\textbf{\thepage}}
+
+% Línea superior activada
+\renewcommand{\headrulewidth}{0.4pt}
+% Línea inferior activada
+\renewcommand{\footrulewidth}{0.4pt} 
+
+% Título
+\begin{document}
+\noindent
+\begin{minipage}[c]{0.20\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{0.img/UN.png}
+\end{minipage}\hfill
+\begin{minipage}[c]{0.75\textwidth}
+    \textbf{\LARGE{\documenttitle}} \\[0.1cm]
+    \hrule
+    \vspace{0.1cm}
+    \textbf{\materia} \\[0.3cm]
+    \large{Diego Fernando Bustos Horta, \textit{dbustosh@unal.edu.co}} \\[0.1cm]
+    \large{Julián Mateo Vargas Riveros, \textit{jvargasri@unal.edu.co}} \\[0.1cm]
+    $\boxed{\text{\DTMtoday}}$ % Fecha
+\end{minipage}
+
+
+% Portada con título y autores
+
+
+% Contenido del documento:
+
+\section{Ejercicios de programación genética}
+
+Se desarrollaron los ejercicios 1 y 3 mediante programación genética (PG) en Python con la biblioteca DEAP. A continuación se presenta el diseño, la implementación y los resultados del codificador de siete segmentos.
+
+\subsection{Ejercicio 1: codificador de siete segmentos}
+
+El circuito recibe un dígito BCD representado por cuatro bits, \(b_3b_2b_1b_0\), y produce las siete salidas \(a,\ldots,g\). Se adoptó un visualizador de cátodo común, por lo que un valor de \(1\) enciende el segmento. Para las entradas no válidas en BCD, de \(1010\) a \(1111\), se definió la salida \(0000000\).
+
+La tabla de verdad constituye el criterio con el cual se evalúa cada programa generado. En cada salida, los bits aparecen en el orden \(abcdefg\):
+\[
+\begin{array}{c|c|c}
+\text{Decimal}&b_3b_2b_1b_0&abcdefg\\ \hline
+0&0000&1111110\\
+1&0001&0110000\\
+2&0010&1101101\\
+3&0011&1111001\\
+4&0100&0110011\\
+5&0101&1011011\\
+6&0110&1011111\\
+7&0111&1110000\\
+8&1000&1111111\\
+9&1001&1111011\\
+10\text{--}15&1010\text{--}1111&0000000
+\end{array}
+\]
+
+El conjunto de terminales fue \(T=\{b_3,b_2,b_1,b_0,0,1\}\). El conjunto de funciones incluyó las compuertas AND, OR, XOR y NOT, además de un multiplexor. Este último devuelve \(u\) cuando la condición \(s\) es verdadera y \(v\) en caso contrario:
+\[
+\operatorname{MUX}(s,u,v)=
+\begin{cases}
+u,&s=1,\\
+v,&s=0.
+\end{cases}
+\]
+En el código, las operaciones de NumPy permiten evaluar simultáneamente un árbol sobre las 16 entradas posibles:
+
+\begin{lstlisting}[style=pgpython,caption={Funciones y terminales disponibles para los árboles booleanos.}]
+conjunto = gp.PrimitiveSet("BCD", 4)
+conjunto.renameArguments(
+    ARG0="b3", ARG1="b2", ARG2="b1", ARG3="b0"
+)
+
+conjunto.addPrimitive(np.logical_and, 2, name="AND")
+conjunto.addPrimitive(np.logical_or, 2, name="OR")
+conjunto.addPrimitive(np.logical_xor, 2, name="XOR")
+conjunto.addPrimitive(np.logical_not, 1, name="NOT")
+conjunto.addPrimitive(
+    lambda s, u, v: np.where(s, u, v), 3, name="MUX"
+)
+
+conjunto.addTerminal(True, name="ONE")
+conjunto.addTerminal(False, name="ZERO")
+\end{lstlisting}
+
+
+Se evolucionó un árbol independiente para cada segmento. Así, un individuo candidato para \(a\) es una expresión booleana que recibe los cuatro bits y devuelve únicamente el estado del segmento \(a\). Su aptitud depende del número de discrepancias con la columna correspondiente de la tabla de verdad:
+\[
+f_k(P)=1-\frac{1}{16}\sum_{i=0}^{15}
+\mathbf{1}\!\left[P(b_i)\ne y_{i,k}\right]
+-0{,}00005\,|P|,
+\]
+donde \(k\) identifica el segmento, \(y_{i,k}\) es la salida esperada para la entrada \(i\), y \(|P|\) es el número de nodos del árbol. El último término favorece árboles más pequeños cuando su comportamiento es similar.
+
+\begin{lstlisting}[style=pgpython,caption={Evaluación de la aptitud de un árbol para un segmento.}]
+resultado = predecir(gp.compile(arbol, conjunto), entradas)
+errores = np.count_nonzero(
+    resultado != esperadas[:, indice]
+)
+aptitud = 1 - errores / 16 - 0.00005 * len(arbol)
+\end{lstlisting}
+
+Se utilizaron 350 individuos y 135 generaciones por segmento. La selección se hizo mediante torneos de cuatro individuos; los dos mejores pasaron directamente a la siguiente generación. La probabilidad de cruce fue \(0{,}78\), la de mutación fue \(0{,}14\) por descendiente y la altura máxima permitida para los árboles fue siete. Se fijaron semillas para reproducir cada corrida.
+
+La salida de la ejecución muestra, para cada segmento, cuántas de las 16 entradas se clasificaron incorrectamente, el número de nodos del mejor árbol y su expresión. Por ejemplo, \texttt{XOR(b3, OR(...))} se lee desde la función exterior hacia sus argumentos; \texttt{ONE} representa la constante lógica \(1\).
+
+\begin{lstlisting}[style=pgterminal,caption={Resultados de la evolución y verificación final.}]
+Segmento a: 1 errores; 10 nodos; árbol = XOR(b3, OR(NOT(OR(b0, b3)), OR(b1, b2)))
+Segmento b: 0 errores; 13 nodos; árbol = NOT(MUX(OR(b0, b3), MUX(b1, b3, b2), MUX(b1, b2, b3)))
+Segmento c: 0 errores; 11 nodos; árbol = MUX(MUX(b3, b2, b0), NOT(b3), MUX(b1, b2, ONE))
+Segmento d: 1 errores; 17 nodos; árbol = XOR(OR(AND(b1, b3), NOT(OR(AND(b2, b0), AND(b3, b2)))), XOR(b1, NOT(b3)))
+Segmento e: 0 errores; 7 nodos; árbol = NOT(OR(b0, MUX(b1, b3, b2)))
+Segmento f: 1 errores; 9 nodos; árbol = NOT(MUX(b2, OR(b3, AND(b0, b1)), b1))
+Segmento g: 1 errores; 5 nodos; árbol = XOR(b3, OR(b1, b2))
+Errores antes de corregir: 4
+Corrección d: entrada 0, 0 -> 1; OR M_0
+Corrección f: entrada 1, 1 -> 0; AND NOT M_1
+Corrección a: entrada 4, 1 -> 0; AND NOT M_4
+Corrección g: entrada 7, 1 -> 0; AND NOT M_7
+Verificación final: 112/112 salidas correctas
+\end{lstlisting}
+
+Los segmentos \(b\), \(c\) y \(e\) acertaron directamente sus 16 casos. Cada uno de los otros cuatro árboles cometió un solo error; por eso la consola informa \texttt{Errores antes de corregir: 4}. Por ejemplo, el árbol de \(e\) corresponde a
+\[
+e=\neg\!\left(b_0\lor\operatorname{MUX}(b_1,b_3,b_2)\right)
+\]
+y fue exacto. En cambio, el árbol de \(g\) corresponde a
+\[
+g_{\mathrm{PG}}=b_3\oplus(b_1\lor b_2).
+\]
+Para la entrada decimal \(7\), este árbol devuelve \(1\), aunque la tabla exige \(0\).
+
+Se completó el circuito mediante un mintermino \(M_i\) para cada entrada errónea. \(M_i\) vale \(1\) únicamente cuando los cuatro bits corresponden al número \(i\). Si un segmento debía estar encendido, se añadió el mintermino mediante OR; si debía estar apagado, se lo excluyó mediante AND NOT. El siguiente fragmento realiza ambas operaciones:
+
+\begin{lstlisting}[style=pgpython,caption={Corrección de las entradas en las que falla el árbol evolucionado.}]
+for i, segmento in zip(*np.where(prediccion != esperadas)):
+    nuevo = int(esperadas[i, segmento])
+    mintermino = np.arange(16) == i
+
+    if nuevo:
+        corregida[:, segmento] |= mintermino
+    else:
+        corregida[:, segmento] &= ~mintermino
+\end{lstlisting}
+
+Por ello, las líneas \texttt{OR M\_0} y \texttt{AND NOT M\_1} de la consola indican, respectivamente, que se encendió \(d\) para la entrada \(0\) y se apagó \(f\) para la entrada \(1\). Las salidas finales quedaron definidas como
+\[
+a=a_{\mathrm{PG}}\land\neg M_4,\qquad
+d=d_{\mathrm{PG}}\lor M_0,\qquad
+f=f_{\mathrm{PG}}\land\neg M_1,\qquad
+g=g_{\mathrm{PG}}\land\neg M_7,
+\]
+mientras que \(b=b_{\mathrm{PG}}\), \(c=c_{\mathrm{PG}}\) y \(e=e_{\mathrm{PG}}\). Finalmente, el programa volvió a evaluar las siete salidas para las 16 entradas. El mensaje \texttt{112/112 salidas correctas} confirma que el circuito \emph{evolucionado y corregido} reproduce toda la tabla de verdad; no atribuye los cuatro ajustes a la evolución por sí sola.
+
+\subsection{Ejercicio 3: detección de posibles fraudes}
+
+Se utilizó programación genética para obtener una regla que clasifica transacciones como posibles fraudes. El ejercicio comprende dos etapas: generar un conjunto de datos sintéticos y evolucionar un programa booleano a partir de esos datos. Los resultados describen el comportamiento del modelo en el conjunto generado; no constituyen una evaluación con transacciones bancarias reales.
+
+\subsubsection{Generación y preparación de los datos}
+
+Se generaron 5000 registros con cinco columnas: monto en pesos colombianos, hora del día, distancia a la residencia en kilómetros, ingreso mensual en pesos y etiqueta de fraude. Primero se asignó una clase latente con una probabilidad inicial de fraude del \(9\,\%\). Después se generaron los atributos: los fraudes tuvieron mayor probabilidad de presentar montos elevados, distancias grandes y operaciones entre las 00:00 y las 05:59. Las distribuciones de ambas clases se solapan; además, se invirtió aleatoriamente el \(1{,}2\,\%\) de las etiquetas para introducir incertidumbre.
+
+El siguiente fragmento muestra las decisiones principales de la generación. La semilla fija permite volver a producir el mismo archivo CSV:
+
+\begin{lstlisting}[style=pgpython,caption={Generación de transacciones sintéticas.}]
+rng = np.random.default_rng(20260929)
+fraude = (rng.random(5000) < 0.09).astype(int)
+
+ingreso = rng.lognormal(
+    np.log(3_400_000), 0.55, 5000
+).clip(950_000, 16_000_000)
+
+hora = rng.integers(0, 24, 5000)
+nocturno = fraude.astype(bool) & (rng.random(5000) < 0.48)
+hora[nocturno] = rng.integers(0, 6, nocturno.sum())
+
+monto = rng.lognormal(np.log(115_000), 1.05, 5000)
+monto[fraude == 1] *= rng.lognormal(
+    np.log(5), 0.95, (fraude == 1).sum()
+)
+
+distancia = rng.exponential(12, 5000)
+distancia[fraude == 1] = rng.exponential(
+    80, (fraude == 1).sum()
+)
+
+invertir = rng.random(5000) < 0.012
+fraude[invertir] = 1 - fraude[invertir]
+\end{lstlisting}
+
+Los valores se limitaron a rangos definidos en el programa antes de guardar el CSV. La ejecución produjo 489 registros etiquetados como fraude y 4511 como no fraude, equivalentes a una proporción final de fraude del \(9{,}78\,\%\). Esta proporción hace que la exactitud por sí sola sea insuficiente para evaluar el clasificador: un programa que siempre responda ``no fraude'' acertaría muchas filas, pero no detectaría ningún fraude.
+
+Se construyeron cinco entradas numéricas para la PG: \(m\), monto expresado en millones de COP; \(h\), hora del día; \(d\), distancia en kilómetros; \(s\), ingreso mensual expresado en millones de COP; y \(r=m/s\), relación entre monto e ingreso. El conjunto se dividió de forma estratificada en 3000 registros de entrenamiento, 1000 de validación y 1000 de prueba. La estratificación conserva aproximadamente la proporción de fraudes en las tres particiones.
+
+\begin{lstlisting}[style=pgpython,caption={Construcción de atributos y particiones estratificadas.}]
+X = np.column_stack((
+    monto / 1e6,
+    hora,
+    distancia,
+    ingreso / 1e6,
+    monto / ingreso,
+))
+
+entrenamiento, resto = train_test_split(
+    np.arange(len(datos)),
+    test_size=0.4,
+    random_state=14,
+    stratify=y,
+)
+
+validacion, prueba = train_test_split(
+    resto,
+    test_size=0.5,
+    random_state=14,
+    stratify=y[resto],
+)
+\end{lstlisting}
+
+\subsubsection{Representación y evolución del clasificador}
+
+Cada individuo de la población es un árbol que devuelve un valor booleano: \(1\) para posible fraude y \(0\) para no fraude. Sus terminales son las cinco entradas anteriores y constantes numéricas. Las funciones primitivas incluyen suma, resta, comparaciones \(<\) y \(>\), operadores lógicos AND, OR y NOT, y una función condicional. Se usaron árboles tipados para que las operaciones aritméticas recibieran números y las operaciones lógicas recibieran valores booleanos.
+
+\begin{lstlisting}[style=pgpython,caption={Algunas funciones primitivas del clasificador.}]
+conjunto = gp.PrimitiveSetTyped(
+    "FLAG", [float] * 5, bool
+)
+
+conjunto.addPrimitive(
+    operator.gt, [float, float], bool, name="GT"
+)
+conjunto.addPrimitive(
+    operator.lt, [float, float], bool, name="LT"
+)
+conjunto.addPrimitive(
+    np.logical_and, [bool, bool], bool, name="AND"
+)
+conjunto.addPrimitive(
+    np.logical_or, [bool, bool], bool, name="OR"
+)
+conjunto.addPrimitive(
+    operator.add, [float, float], float, name="ADD"
+)
+conjunto.addPrimitive(
+    operator.sub, [float, float], float, name="SUB"
+)
+\end{lstlisting}
+
+La aptitud combina el valor \(F_1\) calculado en entrenamiento y una penalización pequeña por el tamaño del árbol:
+\[
+f(P)=F_1(P)-0{,}00035\,|P|,
+\qquad
+F_1=\frac{2\,\mathrm{precisión}\,\mathrm{sensibilidad}}
+{\mathrm{precisión}+\mathrm{sensibilidad}}.
+\]
+El valor \(F_1\) considera conjuntamente las falsas alarmas y los fraudes omitidos. La penalización favorece programas más cortos cuando ofrecen resultados parecidos. En el código, un clasificador que no predice ningún fraude recibe \(F_1=0\):
+
+\begin{lstlisting}[style=pgpython,caption={Función de aptitud utilizada durante la evolución.}]
+estimado = predecir(arbol, conjunto, X_entrenamiento)
+
+aptitud = (
+    f1_score(
+        y_entrenamiento,
+        estimado,
+        zero_division=0,
+    )
+    - 0.00035 * len(arbol)
+)
+\end{lstlisting}
+
+Se realizaron tres corridas con semillas \(121\), \(122\) y \(123\). Cada una empleó 240 individuos y 90 generaciones. La selección se hizo mediante torneos de cuatro individuos, con conservación de los dos mejores, probabilidad de cruce de \(0{,}78\), probabilidad de mutación de \(0{,}14\) por descendiente y altura máxima de siete. Los árboles obtenidos se compararon mediante el \(F_1\) de validación; las etiquetas de prueba se consultaron únicamente después de escoger el modelo.
+
+\subsubsection{Resultados e interpretación}
+
+La ejecución produjo la siguiente salida. Los valores de entrenamiento indican el ajuste a los ejemplos usados para evolucionar; los de validación permiten escoger entre las tres corridas:
+
+\begin{lstlisting}[style=pgterminal,caption={Resultados de las tres corridas y evaluación final.}]
+Archivo: transacciones_sinteticas_pg.csv; filas: 5000; fraudes: 489
+Particiones: entrenamiento=3000, validación=1000, prueba=1000
+Semilla 121: F1 entrenamiento=0.6600; F1 validación=0.6706; nodos=55
+Semilla 122: F1 entrenamiento=0.6580; F1 validación=0.6667; nodos=53
+Semilla 123: F1 entrenamiento=0.6735; F1 validación=0.6946; nodos=57
+F1 entrenamiento=0.6735; F1 validación=0.6946
+Prueba: TN=885, FP=17, FN=32, TP=66
+Precisión=0.7952; sensibilidad=0.6735; F1=0.7293; exactitud balanceada=0.8273
+\end{lstlisting}
+
+Se escogió la corrida con semilla \(123\), pues alcanzó el mayor \(F_1\) de validación: \(0{,}6946\). El programa imprimió su árbol mediante llamadas anidadas a \texttt{LT}, \texttt{SUB} y \texttt{ADD}. Aunque la expresión impresa ocupa una línea extensa y contiene operaciones repetidas, su simplificación algebraica produce la siguiente regla equivalente:
+\[
+\widehat{y}=
+\begin{cases}
+1,&d+25m-h>52,\\
+0,&d+25m-h\leq52.
+\end{cases}
+\]
+Se comprobó que la regla simplificada y el árbol impreso devuelven la misma clasificación para los 5000 registros generados. En esta expresión, \(m\) está en millones de COP, \(d\) en kilómetros y \(h\) es la hora numérica. La combinación es una puntuación aprendida por el programa, no una suma con significado físico. Aunque se ofrecieron el ingreso \(s\) y la relación \(r\), el árbol seleccionado no los utiliza.
+
+En el conjunto de prueba, \texttt{TN} representa transacciones legítimas clasificadas correctamente; \texttt{FP}, falsas alarmas; \texttt{FN}, fraudes omitidos; y \texttt{TP}, fraudes detectados. La matriz de confusión obtenida fue
+\[
+\begin{array}{c|cc}
+&\widehat{y}=0&\widehat{y}=1\\ \hline
+y=0&885&17\\
+y=1&32&66
+\end{array}
+\]
+Por tanto, de los 98 fraudes presentes en prueba se detectaron 66 y se omitieron 32. La precisión fue \(66/(66+17)=0{,}7952\), mientras que la sensibilidad fue \(66/(66+32)=0{,}6735\). El valor \(F_1\) alcanzó \(0{,}7293\) y la exactitud balanceada, \(0{,}8273\).
+
+El experimento demuestra que la PG puede construir una regla ejecutable e interpretable a partir de los atributos proporcionados. Su alcance está limitado por el origen sintético de los datos: las relaciones que aprendió reflejan las distribuciones utilizadas para generarlos. Para evaluar un detector aplicable a transacciones reales sería necesario emplear datos reales separados en el tiempo, incorporar información contextual del cliente y considerar explícitamente el costo de las falsas alarmas y de los fraudes no detectados.
+
+\end{document}

@@ -1,0 +1,219 @@
+\documentclass[14pt,twoside]{article}
+
+% ==================== Paquetes ====================
+\usepackage[utf8]{inputenc}
+\usepackage[spanish]{babel}
+\usepackage{amsmath, amssymb}
+\usepackage{graphicx}
+\usepackage{geometry}
+\usepackage{fancyhdr}
+\usepackage[hidelinks]{hyperref}
+\usepackage{enumitem}
+\usepackage{mathrsfs}
+\usepackage{float}
+\usepackage{setspace}
+\usepackage{parskip}
+\usepackage{tikz}
+\usepackage{lmodern}
+\usepackage{datetime2}
+\usepackage{bm}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{xcolor}
+\usepackage{listings}
+
+% ==================== Estilo de código ====================
+\definecolor{pgfondo}{HTML}{F6F8FA}
+\definecolor{pgborde}{HTML}{D0D7DE}
+\definecolor{pgazul}{HTML}{0550AE}
+\definecolor{pgverde}{HTML}{116329}
+\definecolor{pggris}{HTML}{57606A}
+\definecolor{pgmorado}{HTML}{8250DF}
+
+\lstdefinestyle{pgbase}{
+    basicstyle=\ttfamily\footnotesize,
+    backgroundcolor=\color{pgfondo},
+    frame=single,
+    rulecolor=\color{pgborde},
+    framesep=6pt,
+    breaklines=true,
+    breakatwhitespace=false,
+    columns=fullflexible,
+    keepspaces=true,
+    showstringspaces=false,
+    tabsize=4,
+    captionpos=b,
+    aboveskip=1em,
+    belowskip=1em,
+    literate=
+        {á}{{\'a}}1 {é}{{\'e}}1 {í}{{\'i}}1
+        {ó}{{\'o}}1 {ú}{{\'u}}1 {ñ}{{\~n}}1
+        {Á}{{\'A}}1 {É}{{\'E}}1 {Í}{{\'I}}1
+        {Ó}{{\'O}}1 {Ú}{{\'U}}1 {Ñ}{{\~N}}1
+        {¿}{{?`}}1 {¡}{{!`}}1
+}
+
+\lstdefinestyle{pgpython}{
+    style=pgbase,
+    language=Python,
+    keywordstyle=\color{pgazul}\bfseries,
+    commentstyle=\color{pggris}\itshape,
+    stringstyle=\color{pgverde},
+    emph={np,pd,sklearn,Pipeline,StandardScaler,GridSearchCV,SVC,KNeighborsClassifier,DecisionTreeClassifier,PolynomialFeatures,LinearRegression},
+    emphstyle=\color{pgmorado},
+    numbers=left,
+    numberstyle=\ttfamily\scriptsize\color{pggris},
+    numbersep=10pt
+}
+
+\lstdefinestyle{pgterminal}{
+    style=pgbase,
+    numbers=none
+}
+
+% ==================== Márgenes y formato ====================
+\geometry{
+  top=2.5cm,
+  bottom=2.5cm,
+  left=2cm,
+  right=2cm
+}
+\singlespacing
+\renewcommand{\arraystretch}{1.5}
+
+% ==================== Datos del documento ====================
+\newcommand{\documenttitle}{Ejercicios de Machine Learning}
+\newcommand{\materia}{Inteligencia Artificial y Mini-Robots (2023251)}
+\newcommand{\mydate}{\DTMdate{2026-10-04}}
+
+% ==================== Encabezado y pie ====================
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[RO]{\textbf{\materia}}
+\fancyhead[LO]{\textit{\documenttitle}}
+\fancyhead[RE]{\textit{\documenttitle}}
+\fancyhead[LE]{\textbf{\materia}}
+\fancyfoot[LE,RO]{\textit{Universidad Nacional de Colombia}}
+\fancyfoot[RE,LO]{\textbf{\thepage}}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0.4pt}
+
+\begin{document}
+
+% ==================== Cabecera principal ====================
+\noindent
+\begin{minipage}[c]{0.20\textwidth}
+    \centering
+    \includegraphics[width=0.90\linewidth]{0.img/UN.png}
+\end{minipage}\hfill
+\begin{minipage}[c]{0.75\textwidth}
+    \textbf{\LARGE{\documenttitle}} \\[0.1cm]
+    \hrule
+    \vspace{0.1cm}
+    \textbf{\materia} \\[0.3cm]
+    \large{Diego Fernando Bustos Horta, \textit{dbustosh@unal.edu.co}} \\[0.1cm]
+    \large{Julián Mateo Vargas Riveros, \textit{jvargasri@unal.edu.co}} \\[0.1cm]
+    $\boxed{\text{\mydate}}$
+\end{minipage}
+
+\vspace{0.5cm}
+
+% =====================================================================
+\section*{Informe de desarrollo --- ejercicios de Inteligencia Artificial}
+
+Este repositorio reúne la solución de los cinco ejercicios propuestos en la sección 7.11 de \texttt{IA.md}. Cada punto tiene sus fuentes, código y evidencia en una carpeta independiente.
+
+\section{Skills para apoyar el trabajo con IA}
+
+Se definieron cuatro skills locales, cada una con un archivo \texttt{SKILL.md} que describe cuándo usarla, sus pasos y su resultado esperado:
+
+\begin{center}
+\begin{tabular}{p{0.36\textwidth} p{0.52\textwidth}}
+\textbf{Skill} & \textbf{Función} \\
+\hline
+\texttt{capturar-requerimientos} & Extraer requisitos y mantener trazabilidad con los documentos fuente. \\
+\texttt{documentar-ticket} & Convertir una necesidad en un ticket con alcance y criterios de aceptación. \\
+\texttt{implementar-y-probar} & Guiar la implementación y su validación. \\
+\texttt{explicar-trabajo} & Establecer la estructura de una explicación HTML del trabajo realizado. \\
+\end{tabular}
+\end{center}
+
+Se aplicaron al documento \texttt{P1.pdf} como ejemplo de captura y organización del trabajo. El resultado está en \texttt{01/P1-Skills.md}, con los aportes separados por skill. En ese ejemplo no se generó una página HTML ni se implementó software: el archivo documenta el plan y la explicación textual.
+
+\section{Chatbot RAG industrial}
+
+Se construyó un chatbot para consultar manuales de \textbf{pulidora, taladro y compresor}. Hay cuatro PDF en \texttt{02/data}, incluidos dos documentos de compresor. Las versiones Markdown procesadas están en \texttt{02/rag/data}.
+
+El flujo toma el texto del manual, lo limpia y divide en fragmentos; luego genera embeddings con \texttt{embeddinggemma} mediante Ollama y los guarda en SQLite. Para responder, combina similitud semántica con coincidencia de términos, filtra por herramienta cuando la pregunta la identifica y envía los fragmentos recuperados a \texttt{gemma3:1b}. La respuesta incluye el nombre del documento y el número de fragmento.
+
+\textbf{Código y evidencia:}
+
+\begin{itemize}
+\item Pipeline, consulta y uso: \texttt{02/rag/README.md}.
+\item Preguntas y respuestas generadas: \texttt{02/preguntas\_y\_respuestas.md}.
+\end{itemize}
+
+Ejemplo de ejecución, desde la raíz del repositorio:
+
+\begin{verbatim}
+python3 02/rag/scripts/build_index.py
+python3 02/rag/scripts/embed_with_ollama.py embeddinggemma 2
+python3 02/rag/scripts/chat.py "¿Qué debo revisar antes de encender la pulidora?"
+\end{verbatim}
+
+La calidad de las respuestas aún requiere revisión humana: algunos manuales extraídos contienen texto desordenado o varios idiomas, y la evaluación registra casos con fuentes mezcladas o respuestas incompletas. La herramienta sirve como prototipo académico; las instrucciones de seguridad deben confirmarse en el manual original.
+
+\section{Chatbot para los documentos del curso}
+
+Se creó un segundo RAG, independiente del industrial, sobre los siete documentos de \texttt{03/data/mds}: introducción a la IA, autómatas celulares, algoritmos genéticos, programación genética, redes neuronales, Machine Learning e IA generativa.
+
+El sistema indexa los documentos, crea embeddings con \texttt{embeddinggemma}, recupera fragmentos relevantes y genera respuestas con \texttt{gemma3:1b}, incluyendo las fuentes consultadas. La implementación y las instrucciones están en \texttt{03/rag/README.md}.
+
+\begin{verbatim}
+python3 03/rag/scripts/build_index.py
+python3 03/rag/scripts/embed.py embeddinggemma 4
+python3 03/rag/scripts/chat.py "¿Qué diferencia hay entre algoritmos genéticos y programación genética?"
+\end{verbatim}
+
+La batería de evaluación contiene \textbf{21 preguntas}, tres por documento. El archivo \texttt{03/preguntas\_y\_respuestas.md} se actualiza después de cada respuesta y puede estar parcialmente completado mientras Ollama trabaja. El progreso se consulta con:
+
+\begin{verbatim}
+python3 03/rag/scripts/progreso.py --watch
+\end{verbatim}
+
+Para reanudar las preguntas pendientes: \texttt{python3 03/rag/scripts/evaluate\_questions.py}. Las respuestas automáticas deben revisarse antes de presentarlas como contenido académico validado.
+
+\section{Agente de mantenimiento}
+
+Se implementó un agente de consola independiente de los dos RAG. Usa SQLite para persistir equipos, repuestos, existencias, órdenes de trabajo e historial de fallas. Permite buscar un repuesto por código, consultar su cantidad y ubicación, crear una orden con falla y equipo, y registrar cambios de estado en el historial. Crear una orden también registra la falla; los eventos posteriores se conservan para mantener trazabilidad.
+
+El código y las instrucciones están en \texttt{04/agente.py} y \texttt{04/README.md}. El comando \texttt{demo} carga datos ficticios para reproducir el ejercicio:
+
+\begin{verbatim}
+python3 04/agente.py demo
+python3 04/agente.py buscar-repuesto REP-DIS-01
+python3 04/agente.py consultar-almacen REP-DIS-01
+python3 04/agente.py crear-orden --equipo EQ-PUL-01 --falla "Vibración excesiva" --repuesto REP-DIS-01
+python3 04/agente.py actualizar-historial --orden 1 --estado en_proceso --nota "Disco inspeccionado"
+\end{verbatim}
+
+Las pruebas de \texttt{04/pruebas\_y\_resultados.md} documentan comandos y respuestas reales. La última ejecución registró \textbf{7/7 comprobaciones aprobadas}, incluidas cinco pruebas automáticas. Se pueden repetir con \texttt{python3 04/evaluar.py}. En una base que ya contenga órdenes, se debe usar el ID devuelto por \texttt{crear-orden} en lugar del \texttt{1} del ejemplo.
+
+\section{Uso de un LLM con ESP32}
+
+En \texttt{05.md} se analizó la viabilidad de usar un microcontrolador ESP32 con un LLM. La propuesta es utilizar el ESP32 para capturar datos y comunicarse por Wi-Fi con un servidor o API que ejecute el modelo. Se describen las limitaciones de memoria, procesamiento, almacenamiento, conexión, latencia, consumo, costos y privacidad. Este punto es un análisis conceptual; no incluye firmware ni montaje físico.
+
+\section{Requisitos para ejecutar los chatbots}
+
+\begin{itemize}
+\item Python 3.10 o posterior y Ollama instalados localmente.
+\item Modelos \texttt{embeddinggemma} y \texttt{gemma3:1b} disponibles en Ollama.
+\item Servicio de Ollama accesible en \texttt{http://localhost:11434}.
+\item Los índices SQLite se generan con los comandos de cada punto; no forman parte del código fuente versionado.
+\end{itemize}
+
+El agente del punto 4 solo necesita Python 3. Los detalles de uso y regeneración están en los README de cada carpeta.
+
+
+\end{document}
